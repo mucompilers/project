@@ -50,7 +50,7 @@ ID(accumulator)
 /=
 LITDEC(2)
 ,
-_
+ID(_)
 =>
 {
 }
@@ -66,3 +66,4 @@ ID(program)
 ID(accumulator)
 )
 ;
+}
