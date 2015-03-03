@@ -1,0 +1,7 @@
+ID(abc)
+ID(ABC)
+ID(abc123)
+ID(abc_123)
+LITDEC(123)
+ID(abc_)
+ID(a_b_c_d_e_f_g_h_i_j_k_l_m_n_o_p_q_r_s)

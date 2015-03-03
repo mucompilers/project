@@ -1,0 +1,8 @@
+LITCHAR(H)
+LITCHAR(x)
+LITCHAR(Y)
+LITCHAR(%)
+LITCHAR($)
+LITCHAR(#)
+LITSTR(Hello world !?)
+LITSTR(123_^_!@#$%^^&*()abc)

@@ -1,0 +1,15 @@
+Build/Run instructions:
+
+# On an up-to-date system:
+
+    $ cabal sandbox init
+    $ cabal install --only-dependencies
+    $ cabal build
+    $ cabal run
+
+# On Babbage:
+
+    $ cabal install --only-dependencies
+    $ cabal configure
+    $ cabal build
+    $ ./dist/build/pa0/pa0
