@@ -9,8 +9,7 @@ fi
 for f in *.rs
 do
       echo "*** Test $f ***"
-      #$1 < $f > out.tmp 2>&1
-      $1 < $f > "${f%.rs}.out" 2>&1
-      #diff -w -B out.tmp "${f%.rs}.out"
-      #rm out.tmp
+      $1 < $f > out.tmp 2>&1
+      diff -w -B out.tmp "${f%.rs}.out"
+      rm out.tmp
 done
