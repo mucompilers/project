@@ -1,0 +1,11 @@
+fn foo(x: i32, y: i32, b: bool) -> ! { loop { } }
+
+fn bar(a: bool, b: Box<bool>, c: i32) -> Box<i32> {
+    return Box::new(4);
+}
+
+struct Point {x : i32, y : i32}
+
+fn baz(x: Point) -> i32 { x.x }
+
+fn main() { }
