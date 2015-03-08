@@ -3,16 +3,16 @@
         (struct-def
             (id
                 (Point))
-            (struct-field-defs
-                (struct-field-def
+            (field-defs
+                (field-def
                     (id
                         (x))
                     (type-i32))
-                (struct-field-def
+                (field-def
                     (id
                         (y))
                     (type-i32))
-                (struct-field-def
+                (field-def
                     (id
                         (z))
                     (type-i32))))
@@ -44,7 +44,7 @@
                     (pat-struct
                         (id
                             (Point))
-                        (pat-struct-fields
+                        (pat-fields
                             (pat-field
                                 (id
                                     (x))
@@ -74,7 +74,7 @@
                                     (pat-struct
                                         (id
                                             (Point))
-                                        (pat-struct-fields
+                                        (pat-fields
                                             (pat-field
                                                 (id
                                                     (x))
@@ -98,7 +98,7 @@
                                     (pat-struct
                                         (id
                                             (Point))
-                                        (pat-struct-fields
+                                        (pat-fields
                                             (pat-field
                                                 (id
                                                     (x))
@@ -119,7 +119,7 @@
                                     (pat-struct
                                         (id
                                             (Point))
-                                        (pat-struct-fields
+                                        (pat-fields
                                             (pat-field
                                                 (id
                                                     (x))

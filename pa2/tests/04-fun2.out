@@ -52,12 +52,12 @@
         (struct-def
             (id
                 (Point))
-            (struct-field-defs
-                (struct-field-def
+            (field-defs
+                (field-def
                     (id
                         (x))
                     (type-i32))
-                (struct-field-def
+                (field-def
                     (id
                         (y))
                     (type-i32))))
