@@ -22,17 +22,17 @@
             (field-defs
                 (field-def
                     (id
-                        (Color))
+                        (color))
                     (type-i32))
                 (field-def
                     (id
-                        (Model))
+                        (model))
                     (type-i32))
                 (field-def
                     (id
-                        (Width))
+                        (width))
                     (type-i32))
                 (field-def
                     (id
-                        (Tailless))
+                        (tailless))
                     (type-bool))))))

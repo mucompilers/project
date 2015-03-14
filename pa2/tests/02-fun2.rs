@@ -6,6 +6,8 @@ fn bar(a: bool, b: Box<bool>, c: i32) -> Box<i32> {
 
 struct Point {x : i32, y : i32}
 
-fn baz(x: Point) -> i32 { x.x }
+fn baz(x: Point) -> i32 { 1 }
 
-fn main() { }
+fn main() {
+      bar(false, Box::new(false), baz(Point { x:12, y:13 }));
+}

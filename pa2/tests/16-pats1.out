@@ -1,0 +1,20 @@
+(crate
+    (items
+        (fn-def
+            (id
+                (main))
+            (block
+                (let
+                    (pat-id
+                        (id
+                            (x)))
+                    (type-unit)
+                    (unit))
+                (match
+                    (unit)
+                    (match-arms
+                        (match-arm
+                            (pats
+                                (pat-unit))
+                            (block
+                                (unit)))))))))

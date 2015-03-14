@@ -73,12 +73,32 @@
                         (Point))))
             (type-i32)
             (block
-                (field-lookup
-                    (id
-                        (x))
-                    (id
-                        (x)))))
+                (lit-dec)))
         (fn-def
             (id
                 (main))
-            (block))))
+            (block
+                (fn-call
+                    (id
+                        (bar))
+                    (exprs
+                        (false)
+                        (box-new
+                            (exprs
+                                (false)))
+                        (fn-call
+                            (id
+                                (baz))
+                            (exprs
+                                (struct
+                                    (id
+                                        (Point))
+                                    (field-inits
+                                        (field-init
+                                            (id
+                                                (x))
+                                            (lit-dec))
+                                        (field-init
+                                            (id
+                                                (y))
+                                            (lit-dec))))))))))))

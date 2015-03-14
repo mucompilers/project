@@ -22,29 +22,6 @@
                 (let
                     (pat-id
                         (id
-                            (a)))
-                    (arr
-                        (exprs
-                            (lit-dec)
-                            (lit-dec)
-                            (lit-dec))))
-                (let
-                    (pat-arr
-                        (pat-arr-elems
-                            (pat-mut-id
-                                (id
-                                    (x)))
-                            (pat-id
-                                (id
-                                    (y)))
-                            (pat-id
-                                (id
-                                    (z)))))
-                    (id
-                        (a)))
-                (let
-                    (pat-id
-                        (id
                             (list)))
                     (enum
                         (enum-ctor
