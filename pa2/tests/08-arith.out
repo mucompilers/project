@@ -65,23 +65,31 @@
                             (lit-dec))
                         (neg
                             (lit-dec)))
-                    (div
-                        (neg
+                    (rem
+                        (div
                             (mul
-                                (lit-dec)
                                 (neg
-                                    (lit-dec))))
-                        (neg
-                            (rem
-                                (lit-dec)
+                                    (lit-dec))
                                 (neg
-                                    (lit-dec))))))
-                (mul
-                    (sub
-                        (add
+                                    (lit-dec)))
                             (neg
-                                (id
-                                    (a)))
+                                (lit-dec)))
+                        (neg
+                            (lit-dec))))
+                (rem
+                    (div
+                        (mul
+                            (sub
+                                (add
+                                    (neg
+                                        (id
+                                            (a)))
+                                    (neg
+                                        (id
+                                            (b))))
+                                (neg
+                                    (id
+                                        (a))))
                             (neg
                                 (id
                                     (b))))
@@ -89,16 +97,8 @@
                             (id
                                 (a))))
                     (neg
-                        (div
-                            (id
-                                (b))
-                            (neg
-                                (rem
-                                    (id
-                                        (a))
-                                    (neg
-                                        (id
-                                            (b))))))))
+                        (id
+                            (b))))
                 (or
                     (eq
                         (lit-dec)
