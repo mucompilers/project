@@ -28,7 +28,8 @@
                                 (Either))
                             (id
                                 (Left)))
-                        (lit-dec)))
+                        (exprs
+                            (lit-dec))))
                 (match
                     (id
                         (x))
