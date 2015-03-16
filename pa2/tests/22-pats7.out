@@ -28,8 +28,7 @@
                                 (Either))
                             (id
                                 (Left)))
-                        (enum-ctor-params
-                            (lit-dec))))
+                        (lit-dec)))
                 (match
                     (id
                         (x))
