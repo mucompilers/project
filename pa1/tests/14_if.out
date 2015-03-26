@@ -1,0 +1,7 @@
+if
+LITCHAR(c)
+==
+LITCHAR(')
+{
+LITSTR(Hello world)
+}

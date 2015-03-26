@@ -1,0 +1,13 @@
+let
+ID(x)
+=
+-
+LITDEC(5)
+;
+let
+ID(y)
+=
+LITDEC(1)
++
+ID(x)
+;

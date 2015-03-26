@@ -1,0 +1,27 @@
+(crate
+    (items
+        (fn-def
+            (id
+                (main))
+            (block
+                (while
+                    (and
+                        (false)
+                        (true))
+                    (block
+                        (while
+                            (or
+                                (true)
+                                (true))
+                            (block
+                                (while
+                                    (lt
+                                        (lit-dec)
+                                        (lit-dec))
+                                    (block
+                                        (lit-dec)
+                                        (lit-dec)
+                                        (lit-dec)))
+                                (lit-dec)))
+                        (lit-dec)))
+                (lit-dec)))))

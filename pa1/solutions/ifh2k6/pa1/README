@@ -1,0 +1,8 @@
+build:
+	make
+
+run:
+	make test
+
+run (with input file):
+	./lexer filename

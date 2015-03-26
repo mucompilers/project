@@ -1,0 +1,14 @@
+(crate
+    (items
+        (fn-def
+            (id
+                (foo))
+            (block))
+        (fn-def
+            (id
+                (bar))
+            (block))
+        (fn-def
+            (id
+                (main))
+            (block))))

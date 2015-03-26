@@ -1,0 +1,1 @@
+gcc assignment0.c -o pa0
