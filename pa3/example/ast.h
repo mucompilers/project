@@ -63,19 +63,17 @@ enum {
 
 struct item {
       int kind;
+      Symbol id;
       union {
             struct  {
-                  Symbol id;
                   GList* params;
                   struct type* ret;
                   struct exp* block;
             } fn_def;
             struct {
-                  Symbol id;
                   GList* ctors;
             } enum_def;
             struct {
-                  Symbol id;
                   GList* fields;
             } struct_def;
       };

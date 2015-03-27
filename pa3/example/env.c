@@ -74,21 +74,36 @@ struct item* env_lookup_def(struct env* env, Symbol symbol) {
 
 void env_insert(struct env* env, Symbol symbol, struct type* type) {
       assert(env);
-      assert(env->vars);
-      assert(symbol.kind == SYMBOL_VAR);
+      assert(symbol.kind == SYMBOL_TYPE || symbol.kind == SYMBOL_VAR);
 
       struct record* rec = record(type, NULL);
-
-      insert_into(symbol.value, rec, env->vars);
+      switch (symbol.kind) {
+            case SYMBOL_TYPE:
+                  assert(env->types);
+                  insert_into(symbol.value, rec, env->types);
+                  break;
+            case SYMBOL_VAR:
+                  assert(env->vars);
+                  insert_into(symbol.value, rec, env->vars);
+                  break;
+      }
 }
 
 void env_insert_def(struct env* env, Symbol symbol, struct item* def) {
       assert(env);
-      assert(env->types);
-      assert(symbol.kind == SYMBOL_TYPE);
+      assert(symbol.kind == SYMBOL_TYPE || symbol.kind == SYMBOL_VAR);
 
       struct record* rec = record(NULL, def);
-      insert_into(symbol.value, rec, env->types);
+      switch (symbol.kind) {
+            case SYMBOL_TYPE:
+                  assert(env->types);
+                  insert_into(symbol.value, rec, env->types);
+                  break;
+            case SYMBOL_VAR:
+                  assert(env->vars);
+                  insert_into(symbol.value, rec, env->vars);
+                  break;
+      }
 }
 
 bool env_contains(struct env* env, Symbol symbol) {
@@ -113,15 +128,21 @@ static void print_entry(int symbol_value, struct record* rec, int symbol_kind) {
 
       switch (symbol_kind) {
             case SYMBOL_TYPE:
-                  printf("type(%s) |-> ", symbol_to_str(symbol));
-                  item_print_pretty(rec->def);
+                  printf("type(%s)", symbol_to_str(symbol));
                   break;
             case SYMBOL_VAR:
-                  printf("var(%s) |-> ", symbol_to_str(symbol));
-                  type_print_pretty(rec->type);
+                  printf("var(%s)", symbol_to_str(symbol));
                   break;
       }
-      puts("");
+      printf(" |-> { ");
+      if (rec->type) {
+            type_print_pretty(rec->type);
+            if (rec->def) printf(", ");
+      }
+      if (rec->def) {
+            item_print_pretty(rec->def);
+      }
+      puts(" }");
 }
 
 void env_print(struct env* env) {
@@ -143,5 +164,7 @@ void env_destroy(struct env* env) {
 
       g_hash_table_foreach(env->vars, (GHFunc)record_destroy, NULL);
       g_hash_table_destroy(env->vars);
+
+      free(env);
 }
 

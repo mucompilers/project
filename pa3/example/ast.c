@@ -125,7 +125,7 @@ static struct item* item_new(int kind) {
 }
 struct item* item_fn_def(Symbol id, GList* params, struct type* ret, struct exp* block) {
       struct item* n = item_new(ITEM_FN_DEF);
-      n->fn_def.id = id;
+      n->id = id;
       n->fn_def.params = params;
       n->fn_def.ret = ret;
       n->fn_def.block = block;
@@ -133,13 +133,13 @@ struct item* item_fn_def(Symbol id, GList* params, struct type* ret, struct exp*
 }
 struct item* item_enum_def(Symbol id, GList* ctors) {
       struct item* n = item_new(ITEM_ENUM_DEF);
-      n->enum_def.id = id;
+      n->id = id;
       n->enum_def.ctors = ctors;
       return n;
 }
 struct item* item_struct_def(Symbol id, GList* fields) {
       struct item* n = item_new(ITEM_STRUCT_DEF);
-      n->struct_def.id = id;
+      n->id = id;
       n->struct_def.fields = fields;
       return n;
 }
@@ -168,7 +168,7 @@ static void item_print(struct item* item) {
       switch (item->kind) {
             case ITEM_FN_DEF:
                   print_head("fn-def");
-                  symbol_print(item->fn_def.id);
+                  symbol_print(item->id);
                   if (item->fn_def.params) {
                         print_head("fn-params");
                         g_list_foreach(item->fn_def.params, (GFunc)pair_print, NULL);
@@ -179,14 +179,14 @@ static void item_print(struct item* item) {
                   break;
             case ITEM_ENUM_DEF:
                   print_head("enum-def");
-                  symbol_print(item->enum_def.id);
+                  symbol_print(item->id);
                   print_head("enum-ctor-defs");
                   g_list_foreach(item->enum_def.ctors, (GFunc)pair_print, NULL);
                   print_rparen();
                   break;
             case ITEM_STRUCT_DEF:
                   print_head("struct-def");
-                  symbol_print(item->struct_def.id);
+                  symbol_print(item->id);
                   print_head("field-defs");
                   g_list_foreach(item->struct_def.fields, (GFunc)pair_print, NULL);
                   print_rparen();
@@ -861,8 +861,10 @@ void type_destroy(struct type* type) {
       if (!type) return;
 
       switch (type->kind) {
+            case TYPE_INVALID:
             case TYPE_ERROR:
             case TYPE_OK:
+            case TYPE_UNIT:
             case TYPE_I32:
             case TYPE_U8:
             case TYPE_BOOL:
@@ -875,8 +877,9 @@ void type_destroy(struct type* type) {
             case TYPE_ARRAY:
             case TYPE_BOX:
                   type_destroy(type->type);
-                  free(type);
       }
+
+      free(type);
 }
 static void type_print(struct type* type) {
       if (!type) return;
