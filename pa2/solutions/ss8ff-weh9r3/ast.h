@@ -3,6 +3,8 @@
 
 #include <glib.h>
 
+/*This file contains the enumeration for ast.c and parser.y*/
+
 enum {
         AST_INVALID,
         AST_ADD,

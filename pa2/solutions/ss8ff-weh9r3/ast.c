@@ -4,7 +4,7 @@
 #include <glib.h>
 #include "parser.h"
 
-
+//create an ast node that contains a "kind" field that stores the enumeration
 GNode * create_node(int kind, void *val){
         struct ast * ast = malloc(sizeof(*ast));
         ast->kind = kind;
@@ -20,6 +20,7 @@ GNode * create_node(int kind, void *val){
     
 }
 
+//traverse down the tree and print out results with node depth
 void print(GNode *node) {
     
     struct ast * ast = (struct ast*)(node->data);
