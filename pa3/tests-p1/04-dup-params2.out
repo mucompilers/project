@@ -1,0 +1,1 @@
+Error: identifier `x` is bound more than once in the parameter list for the function `foo`.
