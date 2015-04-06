@@ -938,11 +938,6 @@ static void type_print(struct type* type) {
 void type_print_pretty(struct type* type) {
       if (!type) return;
 
-      if (type->kind == TYPE_ERROR
-            || type->kind == TYPE_OK
-            || type->kind == TYPE_DIV)
-            return;
-
       switch (type->kind) {
             case TYPE_ERROR:
                   printf("ERROR!");
