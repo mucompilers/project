@@ -84,6 +84,10 @@ Symbol symbol_return(void) {
       GQuark q = g_quark_from_string("$return");
       return (Symbol){SYMBOL_VAR, q};
 }
+Symbol symbol_main(void) {
+      GQuark q = g_quark_from_string("main");
+      return (Symbol){SYMBOL_VAR, q};
+}
 static bool symbol_is_valid(Symbol x) {
       return x.kind == SYMBOL_CTOR
             || x.kind == SYMBOL_TYPE
@@ -126,8 +130,7 @@ static struct item* item_new(int kind) {
 struct item* item_fn_def(Symbol id, GList* params, struct type* ret, struct exp* block) {
       struct item* n = item_new(ITEM_FN_DEF);
       n->id = id;
-      n->fn_def.params = params;
-      n->fn_def.ret = ret;
+      n->fn_def.type = type_fn(params, ret);
       n->fn_def.block = block;
       return n;
 }
@@ -148,8 +151,7 @@ void item_destroy(struct item* item) {
 
       switch (item->kind) {
             case ITEM_FN_DEF:
-                  g_list_free_full(item->fn_def.params, (GDestroyNotify)pair_destroy);
-                  type_destroy(item->fn_def.ret);
+                  type_destroy(item->fn_def.type);
                   exp_destroy(item->fn_def.block);
                   break;
             case ITEM_ENUM_DEF:
@@ -169,12 +171,12 @@ static void item_print(struct item* item) {
             case ITEM_FN_DEF:
                   print_head("fn-def");
                   symbol_print(item->id);
-                  if (item->fn_def.params) {
+                  if (item->fn_def.type->params) {
                         print_head("fn-params");
-                        g_list_foreach(item->fn_def.params, (GFunc)pair_print, NULL);
+                        g_list_foreach(item->fn_def.type->params, (GFunc)pair_print, NULL);
                         print_rparen();
                   }
-                  type_print(item->fn_def.ret);
+                  type_print(item->fn_def.type->type);
                   exp_print(item->fn_def.block);
                   break;
             case ITEM_ENUM_DEF:
@@ -857,6 +859,12 @@ struct type* type_id(Symbol id) {
       n->id = id;
       return n;
 }
+struct type* type_fn(GList* params, struct type* ret) {
+      struct type* n = type_new(TYPE_FN);
+      n->params = params;
+      n->type = ret;
+      return n;
+}
 void type_destroy(struct type* type) {
       if (!type) return;
 
@@ -877,6 +885,12 @@ void type_destroy(struct type* type) {
             case TYPE_ARRAY:
             case TYPE_BOX:
                   type_destroy(type->type);
+                  break;
+
+            case TYPE_FN:
+                  type_destroy(type->type);
+                  g_list_free_full(type->params, (GDestroyNotify)pair_destroy);
+                  break;
       }
 
       free(type);
@@ -979,6 +993,10 @@ void type_print_pretty(struct type* type) {
             case TYPE_BOX:
                   // TODO
                   printf("Box");
+                  break;
+            case TYPE_FN:
+                  // TODO
+                  printf("fn");
                   break;
             case TYPE_ID:
                   printf("%s", symbol_to_str(type->id));

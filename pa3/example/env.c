@@ -24,7 +24,7 @@ static struct record* record(struct type* type, struct item* def) {
       return rec;
 }
 
-struct env* env(void) {
+struct env* env_new(void) {
       struct env* env = malloc(sizeof(*env));
       env->types = g_hash_table_new(NULL, NULL);
       env->vars = g_hash_table_new(NULL, NULL);
@@ -36,7 +36,7 @@ static void insert_into(int key, struct record* value, GHashTable* ht) {
 }
 
 struct env* env_copy(struct env* old) {
-      struct env* new = env();
+      struct env* new = env_new();
 
       g_hash_table_foreach(old->types, (GHFunc)insert_into, new->types);
       g_hash_table_foreach(old->vars, (GHFunc)insert_into, new->vars);
@@ -63,10 +63,17 @@ struct type* env_lookup(struct env* env, Symbol symbol) {
 
 struct item* env_lookup_def(struct env* env, Symbol symbol) {
       assert(env);
-      assert(env->types);
-      assert(symbol.kind == SYMBOL_TYPE);
 
-      struct record* rec = (struct record*)g_hash_table_lookup(env->types, GINT_TO_POINTER(symbol.value));
+      struct record* rec = NULL;
+      switch (symbol.kind) {
+            case SYMBOL_TYPE:
+                  rec = (struct record*)g_hash_table_lookup(env->types, GINT_TO_POINTER(symbol.value));
+                  break;
+            case SYMBOL_VAR:
+                  rec = (struct record*)g_hash_table_lookup(env->vars, GINT_TO_POINTER(symbol.value));
+                  break;
+      }
+
 
       if (!rec) return NULL;
       return rec->def;
@@ -76,16 +83,25 @@ void env_insert(struct env* env, Symbol symbol, struct type* type) {
       assert(env);
       assert(symbol.kind == SYMBOL_TYPE || symbol.kind == SYMBOL_VAR);
 
-      struct record* rec = record(type, NULL);
       switch (symbol.kind) {
-            case SYMBOL_TYPE:
+            case SYMBOL_TYPE: {
                   assert(env->types);
+                  struct record* rec = g_hash_table_lookup(env->types, GINT_TO_POINTER(symbol.value));
+                  if (!rec) rec = record(NULL, NULL);
+                  rec->type = type;
+
                   insert_into(symbol.value, rec, env->types);
                   break;
-            case SYMBOL_VAR:
+            }
+            case SYMBOL_VAR: {
                   assert(env->vars);
+                  struct record* rec = g_hash_table_lookup(env->vars, GINT_TO_POINTER(symbol.value));
+                  if (!rec) rec = record(NULL, NULL);
+                  rec->type = type;
+
                   insert_into(symbol.value, rec, env->vars);
                   break;
+            }
       }
 }
 
@@ -93,16 +109,25 @@ void env_insert_def(struct env* env, Symbol symbol, struct item* def) {
       assert(env);
       assert(symbol.kind == SYMBOL_TYPE || symbol.kind == SYMBOL_VAR);
 
-      struct record* rec = record(NULL, def);
       switch (symbol.kind) {
-            case SYMBOL_TYPE:
+            case SYMBOL_TYPE: {
                   assert(env->types);
+                  struct record* rec = g_hash_table_lookup(env->types, GINT_TO_POINTER(symbol.value));
+                  if (!rec) rec = record(NULL, NULL);
+                  rec->def = def;
+
                   insert_into(symbol.value, rec, env->types);
                   break;
-            case SYMBOL_VAR:
+            }
+            case SYMBOL_VAR: {
                   assert(env->vars);
+                  struct record* rec = g_hash_table_lookup(env->vars, GINT_TO_POINTER(symbol.value));
+                  if (!rec) rec = record(NULL, NULL);
+                  rec->def = def;
+
                   insert_into(symbol.value, rec, env->vars);
                   break;
+            }
       }
 }
 

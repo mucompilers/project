@@ -10,7 +10,7 @@ struct env {
       GHashTable* types;
 };
 
-struct env* env(void);
+struct env* env_new(void);
 // Copies the hash table but not the types/items stored in the hash table.
 struct env* env_copy(struct env*);
 

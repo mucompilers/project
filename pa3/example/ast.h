@@ -42,6 +42,8 @@ Symbol symbol_var(char*);
 Symbol symbol_field(char*);
 // Special symbol for storing the function return type.
 Symbol symbol_return(void);
+// Special symbol for main.
+Symbol symbol_main(void);
 
 // Translates a symbol to the original string used to create it. The resulting
 // string shouldn't be messed with.
@@ -64,10 +66,10 @@ enum {
 struct item {
       int kind;
       Symbol id;
+      struct type* type;
       union {
             struct  {
-                  GList* params;
-                  struct type* ret;
+                  struct type* type;
                   struct exp* block;
             } fn_def;
             struct {
@@ -200,6 +202,7 @@ enum {
 
 struct exp {
       int kind;
+      struct type* type;
 
       union {
             int num;
@@ -301,10 +304,13 @@ enum {
       TYPE_ARRAY,
       TYPE_BOX,
       TYPE_ID,
+      TYPE_FN,
 };
 
 struct type {
       int kind;
+      bool mut;
+      GList* params;
       struct type* type;
       int length;
       Symbol id;
@@ -323,6 +329,7 @@ struct type* type_slice(struct type* type);
 struct type* type_array(struct type* type, int length);
 struct type* type_box(struct type* type);
 struct type* type_id(Symbol id);
+struct type* type_fn(GList* params, struct type* ret);
 void type_destroy(struct type* type);
 void type_print_pretty(struct type* type); // TODO
 
