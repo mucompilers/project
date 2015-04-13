@@ -1,6 +1,6 @@
 PROGRAM = pa3
-CFILES = frontend.c ast.c env.c
-HEADERS = ast.h frontend.h
+CFILES = frontend.c ast.c env.c type.c ast_print.c symbol.c
+HEADERS = ast.h frontend.h type.h ast_print.h symbol.h
 YFILE = parser.y
 LFILE = lexer.l
 
@@ -12,7 +12,7 @@ LEX = flex
 YACC = bison
 
 # Autogenerate headers as well as *.c files.
-YFLAGS = --report=all --defines=$(YFILE:%.y=%.h) -o y.tab.c
+YFLAGS = --defines=$(YFILE:%.y=%.h) -o y.tab.c
 LFLAGS = --header-file=$(LFILE:%.l=%.h)
 
 # Make all headers a dependency to everything.

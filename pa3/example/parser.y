@@ -12,6 +12,7 @@ extern int yylex(void);
 
 #include <glib.h>
 #include "ast.h"
+#include "type.h"
 
 }
 
@@ -98,10 +99,10 @@ items : item                                     { $$ = g_list_append(NULL, $1);
 
 item  : "fn" T_ID '(' params ')' "->" type block { $$ = item_fn_def(symbol_var($2), $4, $7, $8); }
       | "fn" T_ID '(' params ')' "->" '!' block  { $$ = item_fn_def(symbol_var($2), $4, type_div(), $8); }
-      | "fn" T_ID '(' params ')' block           { $$ = item_fn_def(symbol_var($2), $4, NULL, $6); }
+      | "fn" T_ID '(' params ')' block           { $$ = item_fn_def(symbol_var($2), $4, type_unit(), $6); }
       | "fn" T_ID '(' ')' "->" type block        { $$ = item_fn_def(symbol_var($2), NULL, $6, $7); }
       | "fn" T_ID '(' ')' "->" '!' block         { $$ = item_fn_def(symbol_var($2), NULL, type_div(), $7); }
-      | "fn" T_ID '(' ')' block                  { $$ = item_fn_def(symbol_var($2), NULL, NULL, $5); }
+      | "fn" T_ID '(' ')' block                  { $$ = item_fn_def(symbol_var($2), NULL, type_unit(), $5); }
       | "enum" T_ID '{' ctor_defs '}'            { $$ = item_enum_def(symbol_type($2), $4); }
       | "struct" T_ID '{' field_defs '}'         { $$ = item_struct_def(symbol_type($2), $4); }
 
@@ -172,8 +173,8 @@ type  : T_ID                                     { $$ = type_id(symbol_type($1))
       | "bool"                                   { $$ = type_bool(); }
       | "Box" '<' type '>'                       { $$ = type_box($3); }
 
-block : '{' '}'                                  { $$ = exp_block(NULL, NULL); }
-      | '{' stmts '}'                            { $$ = exp_block($2, NULL); }
+block : '{' '}'                                  { $$ = exp_block(NULL, exp_unit()); }
+      | '{' stmts '}'                            { $$ = exp_block($2, exp_unit()); }
       | '{' stmts exp '}'                        { $$ = exp_block($2, $3); }
       | '{' exp '}'                              { $$ = exp_block(NULL, $2); }
 
@@ -183,7 +184,7 @@ stmts : stmt                                     { $$ = g_list_append(NULL, $1);
 stmt  : "let" pat ':' type '=' exp ';'           { $$ = stmt_let($2, $4, $6); }
       | "let" pat '=' exp ';'                    { $$ = stmt_let($2, NULL, $4); }
       | "let" pat ':' type ';'                   { $$ = stmt_let($2, $4, NULL); }
-      | "return" ';'                             { $$ = stmt_return(NULL); }
+      | "return" ';'                             { $$ = stmt_return(exp_unit()); }
       | "return" exp ';'                         { $$ = stmt_return($2); }
       | exp ';'                                  { $$ = stmt_exp($1); }
 

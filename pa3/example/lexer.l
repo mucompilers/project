@@ -14,7 +14,7 @@ static char* dup_lit(const char* lit);
 %option nounput
 %option noinput
 
-ID [a-zA-Z\x80-\xff_][a-zA-Z0-9\x80-\xff_]*
+ID [a-zA-Z_][a-zA-Z0-9_]*
 
 %%
 

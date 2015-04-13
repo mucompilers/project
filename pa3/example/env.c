@@ -5,6 +5,7 @@
 #include <glib.h>
 #include "env.h"
 #include "ast.h"
+#include "ast_print.h"
 
 // This is the information stored in the environment for every symbol.
 struct record {
@@ -14,6 +15,7 @@ struct record {
 
 static struct record* record(struct type* type, struct item* def);
 static void insert_into(int key, struct record* value, GHashTable* ht);
+static void insert_copy_into(int key, struct record* value, GHashTable* ht);
 static void record_destroy(int key, struct record* rec);
 static void print_entry(int, struct record*, int);
 
@@ -35,11 +37,16 @@ static void insert_into(int key, struct record* value, GHashTable* ht) {
       g_hash_table_insert(ht, GINT_TO_POINTER(key), value);
 }
 
+static void insert_copy_into(int key, struct record* value, GHashTable* ht) {
+      assert(value);
+      g_hash_table_insert(ht, GINT_TO_POINTER(key), record(value->type, value->def));
+}
+
 struct env* env_copy(struct env* old) {
       struct env* new = env_new();
 
-      g_hash_table_foreach(old->types, (GHFunc)insert_into, new->types);
-      g_hash_table_foreach(old->vars, (GHFunc)insert_into, new->vars);
+      g_hash_table_foreach(old->types, (GHFunc)insert_copy_into, new->types);
+      g_hash_table_foreach(old->vars, (GHFunc)insert_copy_into, new->vars);
 
       return new;
 }

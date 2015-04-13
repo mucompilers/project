@@ -4,6 +4,8 @@
 #include <glib.h>
 #include <stdbool.h>
 #include "ast.h"
+#include "symbol.h"
+#include "type.h"
 
 struct env {
       GHashTable* vars;

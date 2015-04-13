@@ -4,7 +4,9 @@
 #include "lexer.h"
 #include "parser.h"
 #include "ast.h"
+#include "type.h"
 #include "env.h"
+#include "ast_print.h"
 
 static GList* crate;
 

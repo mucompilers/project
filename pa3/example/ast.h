@@ -3,56 +3,18 @@
 
 #include <glib.h>
 #include <stdbool.h>
+#include "symbol.h"
+#include "type.h"
 
-struct symbol;
 struct item;
 struct stmt;
 struct exp;
 struct pat;
-struct type;
 struct pair;
-
-// *** Symbols ***
-
-enum {
-      SYMBOL_INVALID,
-      SYMBOL_CTOR,
-      SYMBOL_TYPE,
-      SYMBOL_VAR,
-      SYMBOL_FIELD,
-};
-
-struct symbol {
-      int kind;
-      GQuark value;
-};
-
-typedef struct symbol Symbol;
-
-// These functions translate a string into a symbol unique to that string. The
-// resulting symbol can be quickly compared for equality and the like and it
-// also carries around its namespace (i.e., whether it's a struct field,
-// enum constructor name, type name, or variable name).
-// 
-// They take ownership of the string argument (i.e., they free it). Don't call
-// with static strings.
-Symbol symbol_ctor(char*);
-Symbol symbol_type(char*);
-Symbol symbol_var(char*);
-Symbol symbol_field(char*);
-// Special symbol for storing the function return type.
-Symbol symbol_return(void);
-// Special symbol for main.
-Symbol symbol_main(void);
-
-// Translates a symbol to the original string used to create it. The resulting
-// string shouldn't be messed with.
-const char* symbol_to_str(Symbol);
 
 // *** Crate ***
 
 void crate_destroy(GList* items);
-void crate_print(GList* items);
 
 // *** Items ***
 
@@ -85,7 +47,6 @@ struct item* item_fn_def(Symbol id, GList* params, struct type* ret, struct exp*
 struct item* item_enum_def(Symbol id, GList* ctors);
 struct item* item_struct_def(Symbol id, GList* fields);
 void item_destroy(struct item* item);
-void item_print_pretty(struct item* item);
 
 // *** Statements ***
 
@@ -98,6 +59,7 @@ enum {
 
 struct stmt {
       int kind;
+      struct type* type;
       union {
             struct exp* exp; // STMT_EXP, STMT_RETURN
             struct {
@@ -286,52 +248,6 @@ struct exp* exp_unary(const char* op, struct exp* exp);
 struct exp* exp_addrof_mut(struct exp* exp);
 struct exp* exp_binary(const char* op, struct exp* left, struct exp* right);
 void exp_destroy(struct exp* exp);
-
-// *** Types ***
-
-enum {
-      TYPE_INVALID,
-      TYPE_ERROR,
-      TYPE_OK,
-      TYPE_UNIT,
-      TYPE_I32,
-      TYPE_U8,
-      TYPE_BOOL,
-      TYPE_DIV,
-      TYPE_REF,
-      TYPE_REF_MUT,
-      TYPE_SLICE,
-      TYPE_ARRAY,
-      TYPE_BOX,
-      TYPE_ID,
-      TYPE_FN,
-};
-
-struct type {
-      int kind;
-      bool mut;
-      GList* params;
-      struct type* type;
-      int length;
-      Symbol id;
-};
-
-struct type* type_error(void);
-struct type* type_ok(void);
-struct type* type_unit(void);
-struct type* type_i32(void);
-struct type* type_u8(void);
-struct type* type_bool(void);
-struct type* type_div(void);
-struct type* type_ref(struct type* type);
-struct type* type_ref_mut(struct type* type);
-struct type* type_slice(struct type* type);
-struct type* type_array(struct type* type, int length);
-struct type* type_box(struct type* type);
-struct type* type_id(Symbol id);
-struct type* type_fn(GList* params, struct type* ret);
-void type_destroy(struct type* type);
-void type_print_pretty(struct type* type); // TODO
 
 // *** Pairs ***
 
