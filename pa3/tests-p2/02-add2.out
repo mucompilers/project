@@ -1,0 +1,13 @@
+
+(crate:ok! 
+    (items
+        (fn-def:ok! 
+            (id
+                (main))
+            (type-unit)
+            (block:() 
+                (stmt-exp:ERROR! 
+                    (add:ERROR! 
+                        (true:bool)
+                        (lit-dec:i32)))
+                (unit:())))))
