@@ -1,11 +1,11 @@
 
-(crate:ok! 
+(crate:ERROR! 
     (items
-        (fn-def:ok! 
+        (fn-def:ERROR! 
             (id
                 (main))
             (type-unit)
-            (block:() 
+            (block:ERROR! 
                 (stmt-exp:ERROR! 
                     (add:ERROR! 
                         (true:bool)
