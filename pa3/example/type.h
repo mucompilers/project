@@ -15,7 +15,7 @@ enum {
       TYPE_BOOL,
       TYPE_DIV,
       TYPE_REF,
-      TYPE_REF_MUT,
+      TYPE_MUT,
       TYPE_SLICE,
       TYPE_ARRAY,
       TYPE_BOX,
@@ -25,7 +25,6 @@ enum {
 
 struct type {
       int kind;
-      bool mut;
       GList* params;
       struct type* type;
       int length;
@@ -42,6 +41,7 @@ struct type* type_u8(void);
 struct type* type_bool(void);
 struct type* type_div(void);
 struct type* type_ref(struct type* type);
+struct type* type_mut(struct type* type);
 struct type* type_ref_mut(struct type* type);
 struct type* type_slice(struct type* type);
 struct type* type_array(struct type* type, int length);
@@ -49,8 +49,24 @@ struct type* type_box(struct type* type);
 struct type* type_id(Symbol id);
 struct type* type_fn(GList* params, struct type* ret);
 
+/* Recursively compare two types for equality. */
+bool type_eq(const struct type*, const struct type*);
+
+/* Type equality modulo mutability. */
+bool type_eq_mod_mut(const struct type*, const struct type*);
+
+/* These are all equality modulo mutability too. */
+bool type_is_bool(struct type*);
+bool type_is_i32(struct type*);
+bool type_is_unit(struct type*);
+bool type_is_array(struct type*);
+
+/* Returns the element type for an array type. Handles mutable/unmutable
+ * arrays. */
+struct type* type_get_elem(struct type*);
+
 /* Create (allocate) a new type as a copy of the parameter type. */
-struct type* type_copy(struct type* type);
+struct type* type_copy(const struct type* type);
 
 /* Recursively free memory. */
 void type_destroy(struct type* type);

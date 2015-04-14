@@ -33,7 +33,6 @@ static void print_typed_head(const char* head, const struct type* type) {
       print_indent();
       printf("(%s:", head);
       type_print_pretty(type);
-      printf(" ");
       ++indent_level;
 }
 static void print_head(const char* head) {
@@ -156,7 +155,7 @@ static void stmt_print(const struct stmt* stmt) {
                   print_rparen();
                   break;
             case STMT_EXP:
-                  print_typed_head("exp-stmt", stmt->type);
+                  print_typed_head("stmt-exp", stmt->type);
                   exp_print(stmt->exp);
                   print_rparen();
                   break;
@@ -470,8 +469,8 @@ static void type_print(const struct type* type) {
                   type_print(type->type);
                   print_rparen();
                   break;
-            case TYPE_REF_MUT:
-                  print_head("type-ref-mut");
+            case TYPE_MUT:
+                  print_head("type-mut");
                   type_print(type->type);
                   print_rparen();
                   break;
@@ -524,28 +523,31 @@ void type_print_pretty(const struct type* type) {
                   printf("bool");
                   break;
             case TYPE_REF:
-                  // TODO
                   printf("&");
+                  type_print_pretty(type->type);
                   break;
-            case TYPE_REF_MUT:
-                  // TODO
-                  printf("&mut");
+            case TYPE_MUT:
+                  printf("mut ");
+                  type_print_pretty(type->type);
                   break;
             case TYPE_SLICE:
-                  // TODO
-                  printf("arr");
+                  printf("[");
+                  type_print_pretty(type->type);
+                  printf("]");
                   break;
             case TYPE_ARRAY:
-                  // TODO
-                  printf("arr");
+                  printf("[");
+                  type_print_pretty(type->type);
+                  printf(";%d]", type->length);
                   break;
             case TYPE_BOX:
-                  // TODO
-                  printf("Box");
+                  printf("Box<");
+                  type_print_pretty(type->type);
+                  printf(">");
                   break;
             case TYPE_FN:
                   // TODO
-                  printf("fn");
+                  printf("fn (TODO) -> TODO");
                   break;
             case TYPE_ID:
                   printf("%s", symbol_to_str(type->id));
