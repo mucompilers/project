@@ -107,6 +107,9 @@ bool type_eq(const struct type* left, const struct type* right) {
             case TYPE_DIV:
                   return false;
 
+            case TYPE_ID:
+                  return left->id.value == right->id.value;
+
             case TYPE_REF:
             case TYPE_MUT:
             case TYPE_SLICE:
@@ -189,6 +192,12 @@ struct type* type_copy(const struct type* old) {
             case TYPE_DIV:
                   return (struct type*)old;
 
+            case TYPE_ID: {
+                  struct type* new = calloc(1, sizeof(*new));
+                  *new = *old;
+                  return new;
+            }
+
             case TYPE_REF:
             case TYPE_MUT:
             case TYPE_SLICE:
@@ -228,6 +237,9 @@ void type_destroy(struct type* type) {
             case TYPE_DIV:
                   return;
 
+            case TYPE_ID:
+                  break;
+
             case TYPE_REF:
             case TYPE_MUT:
             case TYPE_SLICE:
@@ -240,6 +252,8 @@ void type_destroy(struct type* type) {
                   type_destroy(type->type);
                   g_list_free_full(type->params, (GDestroyNotify)pair_destroy);
                   break;
+
+            default: assert(false);
       }
 
       free(type);
