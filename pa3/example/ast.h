@@ -48,6 +48,10 @@ struct item* item_enum_def(Symbol id, GList* ctors);
 struct item* item_struct_def(Symbol id, GList* fields);
 void item_destroy(struct item* item);
 
+// Return given a struct def, return type corresponding to the parameter field
+// id, type_error() otherwise.
+struct type* item_get_field_type(struct item* struct_def, Symbol id);
+
 // *** Statements ***
 
 enum {
@@ -248,6 +252,15 @@ struct exp* exp_unary(const char* op, struct exp* exp);
 struct exp* exp_addrof_mut(struct exp* exp);
 struct exp* exp_binary(const char* op, struct exp* left, struct exp* right);
 void exp_destroy(struct exp* exp);
+
+// Test for various classes of unary/binary expressions.
+bool exp_is_addrof(struct exp*);          // &
+bool exp_is_arith(struct exp*);           // +, -, *, /, %
+bool exp_is_assign(struct exp*);          // =
+bool exp_is_cmp_assign(struct exp*);      // +=, -=, *=, /=, %=
+bool exp_is_compare(struct exp*);         // <=, >=, <, >
+bool exp_is_eq(struct exp*);              // ==, !=
+bool exp_is_bool(struct exp*);            // !, &&, ||
 
 // *** Pairs ***
 

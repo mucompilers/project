@@ -70,6 +70,18 @@ void item_destroy(struct item* item) {
       free(item);
 }
 
+struct type* item_get_field_type(struct item* struct_def, Symbol id) {
+      assert(id.kind == SYMBOL_FIELD);
+
+      if (!struct_def) return type_error();
+      for (GList* f = struct_def->struct_def.fields; f; f = f->next) {
+            struct pair* field_def = f->data;
+            if (id.value == field_def->field_def.id.value)
+                  return field_def->field_def.type;
+      }
+      return type_error();
+}
+
 // *** Statements ***
 
 static struct stmt* stmt_new(int kind) {
@@ -227,28 +239,34 @@ static struct exp* exp_new(int kind) {
 struct exp* exp_u8(int num) {
       struct exp* n = exp_new(EXP_U8);
       n->num = num;
+      n->type = type_u8();
       return n;
 }
 struct exp* exp_i32(int num) {
       struct exp* n = exp_new(EXP_I32);
       n->num = num;
+      n->type = type_i32();
       return n;
 }
 struct exp* exp_str(char* str) {
       struct exp* n = exp_new(EXP_STR);
       n->str = str;
+      n->type = type_ref(type_slice(type_u8()));
       return n;
 }
 struct exp* exp_true(void) {
       static struct exp n = {.kind = EXP_TRUE};
+      n.type = type_bool();
       return &n;
 }
 struct exp* exp_false(void) {
       static struct exp n = {.kind = EXP_FALSE};
+      n.type = type_bool();
       return &n;
 }
 struct exp* exp_unit(void) {
       static struct exp n = {.kind = EXP_UNIT};
+      n.type = type_unit();
       return &n;
 }
 struct exp* exp_id(Symbol id) {
@@ -413,6 +431,62 @@ void exp_destroy(struct exp* exp) {
       }
 
       free(exp);
+}
+
+bool exp_is_addrof(struct exp* exp) {
+      return exp && (
+            !strcmp(exp->unary.op, "&")
+      );
+}
+
+bool exp_is_arith(struct exp* exp) {
+      return exp && (
+            !strcmp(exp->binary.op, "+")
+            || !strcmp(exp->binary.op, "-")
+            || !strcmp(exp->binary.op, "*")
+            || !strcmp(exp->binary.op, "/")
+            || !strcmp(exp->binary.op, "%")
+      );
+}
+
+bool exp_is_assign(struct exp* exp) {
+      return exp && (
+            !strcmp(exp->binary.op, "=")
+      );
+}
+
+bool exp_is_cmp_assign(struct exp* exp) {
+      return exp && (
+            !strcmp(exp->binary.op, "+=")
+            || !strcmp(exp->binary.op, "-=")
+            || !strcmp(exp->binary.op, "*=")
+            || !strcmp(exp->binary.op, "/=")
+            || !strcmp(exp->binary.op, "%=")
+      );
+}
+
+bool exp_is_compare(struct exp* exp) {
+      return exp && (
+            !strcmp(exp->binary.op, "<=")
+            || !strcmp(exp->binary.op, ">=")
+            || !strcmp(exp->binary.op, "<")
+            || !strcmp(exp->binary.op, ">")
+      );
+}
+
+bool exp_is_eq(struct exp* exp) {
+      return exp && (
+            !strcmp(exp->binary.op, "==")
+            || !strcmp(exp->binary.op, "!=")
+      );
+}
+
+bool exp_is_bool(struct exp* exp) {
+      return exp && (
+            !strcmp(exp->binary.op, "&&")
+            || !strcmp(exp->binary.op, "||")
+            || !strcmp(exp->unary.op, "!")
+      );
 }
 
 // *** Pairs ***

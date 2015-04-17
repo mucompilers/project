@@ -3,6 +3,8 @@
 #include "type.h"
 #include "ast.h" // For pair (params).
 
+static struct type* strip_mut(const struct type*);
+
 static struct type* type_new(int kind) {
       struct type* n = calloc(1, sizeof(*n));
       assert(n);
@@ -82,19 +84,15 @@ struct type* type_fn(GList* params, struct type* ret) {
       return n;
 }
 
-bool type_eq_mod_mut(const struct type* left, const struct type* right) {
+bool type_eq(const struct type* left, const struct type* right) {
       assert(left); assert(right);
 
-      if (left->kind == TYPE_MUT) left = left->type;
-      if (right->kind == TYPE_MUT) right = right->type;
+      left = strip_mut(left);
+      right = strip_mut(right);
 
-      return type_eq(left, right);
-}
+      assert(left); assert(right);
 
-bool type_eq(const struct type* left, const struct type* right) {
       if (left == right) return true;
-
-      assert(left && right);
 
       if (left->kind != right->kind) return false;
 
@@ -112,9 +110,12 @@ bool type_eq(const struct type* left, const struct type* right) {
             case TYPE_REF:
             case TYPE_MUT:
             case TYPE_SLICE:
-            case TYPE_ARRAY:
             case TYPE_BOX:
                   return type_eq(left->type, right->type);
+
+            case TYPE_ARRAY:
+                  return left->length == right->length &&
+                        type_eq(left->type, right->type);
 
             case TYPE_FN: {
                   // TODO (though probably shouldn't need this).
@@ -123,35 +124,55 @@ bool type_eq(const struct type* left, const struct type* right) {
 
             default: assert(false);
       }
-
 }
 
-bool type_is_bool(struct type* type) {
-      return type_eq_mod_mut(type, type_bool());
+struct type* strip_mut(const struct type* type) {
+      if (type_is_mut(type)) {
+            assert(type);
+            return type->type;
+      } else return (struct type*)type;
 }
 
-bool type_is_i32(struct type* type) {
-      return type_eq_mod_mut(type, type_i32());
+bool type_is_mut(const struct type* type) {
+      return type && type->kind == TYPE_MUT;
 }
 
-bool type_is_unit(struct type* type) {
-      return type_eq_mod_mut(type, type_unit());
+bool type_is_ref(const struct type* type) {
+      type = strip_mut(type);
+      return type->kind == TYPE_REF;
 }
 
-bool type_is_array(struct type* type) {
-      assert(type);
-      return type->kind == TYPE_ARRAY
-            || (type->kind == TYPE_MUT && type->type->kind == TYPE_ARRAY);
+bool type_is_box(const struct type* type) {
+      type = strip_mut(type);
+      return type->kind == TYPE_BOX;
+}
+
+bool type_is_id(const struct type* type) {
+      type = strip_mut(type);
+      return type->kind == TYPE_ID;
+}
+
+bool type_is_bool(const struct type* type) {
+      return type_eq(type, type_bool());
+}
+
+bool type_is_i32(const struct type* type) {
+      return type_eq(type, type_i32());
+}
+
+bool type_is_unit(const struct type* type) {
+      return type_eq(type, type_unit());
+}
+
+bool type_is_array(const struct type* type) {
+      type = strip_mut(type);
+      return type->kind == TYPE_ARRAY;
 }
 
 struct type* type_get_elem(struct type* type) {
-      assert(type_is_array(type));
-      if (type->kind == TYPE_ARRAY) {
-            return type->type;
-      } else {
-            assert(type->type);
-            return type->type->type;
-      }
+      assert(type_is_array(type) || type_is_ref(type) || type_is_box(type));
+      type = strip_mut(type);
+      return type->type;
 }
 
 struct type* type_copy(const struct type* old) {
@@ -166,7 +187,7 @@ struct type* type_copy(const struct type* old) {
             case TYPE_U8:
             case TYPE_BOOL:
             case TYPE_DIV:
-                  return old;
+                  return (struct type*)old;
 
             case TYPE_REF:
             case TYPE_MUT:
