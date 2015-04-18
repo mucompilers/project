@@ -42,10 +42,11 @@ static struct env* build_env(GList* crate) {
 
                               assert(pair->param.pat->kind == PAT_BIND);
                               
-                              if (!g_hash_table_insert(params, GINT_TO_POINTER(pair->param.pat->bind.id.value), NULL)) {
+                              if (g_hash_table_lookup(params, GINT_TO_POINTER(pair->param.pat->bind.id.value))) {
                                     printf("Error: identifier `%s` is bound more than once in the parameter list for the function `%s`.\n", symbol_to_str(pair->param.pat->bind.id), symbol_to_str(item->id));
                                     exit(1);
                               }
+                              g_hash_table_insert(params, GINT_TO_POINTER(pair->param.pat->bind.id.value), GINT_TO_POINTER(true));
                         }
                         g_hash_table_destroy(params);
 
@@ -64,10 +65,11 @@ static struct env* build_env(GList* crate) {
                               struct pair* pair = j->data;
                               assert(pair->kind == PAIR_CTOR_DEF);
 
-                              if (!g_hash_table_insert(ctors, GINT_TO_POINTER(pair->ctor_def.id.value), NULL)) {
+                              if (g_hash_table_lookup(ctors, GINT_TO_POINTER(pair->ctor_def.id.value))) {
                                     printf("Error: duplicate definition of the constructor `%s` for the enum `%s`.\n", symbol_to_str(pair->ctor_def.id), symbol_to_str(item->id));
                                     exit(1);
                               }
+                              g_hash_table_insert(ctors, GINT_TO_POINTER(pair->ctor_def.id.value), GINT_TO_POINTER(true));
                         }
                         g_hash_table_destroy(ctors);
 
@@ -86,10 +88,11 @@ static struct env* build_env(GList* crate) {
                               struct pair* pair = j->data;
                               assert(pair->kind == PAIR_FIELD_DEF);
 
-                              if (!g_hash_table_insert(fields, GINT_TO_POINTER(pair->field_def.id.value), NULL)) {
+                              if (g_hash_table_lookup(fields, GINT_TO_POINTER(pair->field_def.id.value))) {
                                     printf("Error: duplicate declaration of the field `%s` of the struct `%s`.\n", symbol_to_str(pair->field_def.id), symbol_to_str(item->id));
                                     exit(1);
                               }
+                              g_hash_table_insert(fields, GINT_TO_POINTER(pair->field_def.id.value), GINT_TO_POINTER(true));
                         }
                         g_hash_table_destroy(fields);
 
