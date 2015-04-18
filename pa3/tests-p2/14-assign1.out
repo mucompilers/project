@@ -1,5 +1,5 @@
 
-(crate:ERROR!
+(crate:ok!
     (items
         (struct-def:ok!
             (id
@@ -15,11 +15,11 @@
                     (type-arr
                         (type-i32)
                         (lit-dec)))))
-        (fn-def:ERROR!
+        (fn-def:ok!
             (id
                 (main))
             (type-unit)
-            (block:ERROR!
+            (block:()
                 (let:()
                     (pat-mut-id
                         (id
@@ -96,26 +96,26 @@
                         (exprs
                             (lit-dec:i32)
                             (lit-dec:i32))))
-                (stmt-exp:ERROR!
-                    (assign:ERROR!
-                        (arr-index:i32
+                (stmt-exp:()
+                    (assign:()
+                        (arr-index:mut i32
                             (id:mut [i32;2]
                                 (a))
                             (lit-dec:i32))
                         (add:i32
                             (id:mut i32
                                 (x))
-                            (arr-index:i32
+                            (arr-index:mut i32
                                 (id:mut [i32;2]
                                     (a))
                                 (lit-dec:i32)))))
-                (stmt-exp:ERROR!
-                    (assign-add:ERROR!
-                        (arr-index:i32
+                (stmt-exp:()
+                    (assign-add:()
+                        (arr-index:mut i32
                             (id:mut [i32;2]
                                 (a))
                             (lit-dec:i32))
-                        (arr-index:i32
+                        (arr-index:mut i32
                             (id:mut [i32;2]
                                 (a))
                             (lit-dec:i32))))
@@ -148,28 +148,28 @@
                                     (exprs
                                         (lit-dec:i32)
                                         (lit-dec:i32)))))))
-                (stmt-exp:ERROR!
-                    (assign:ERROR!
-                        (field-lookup:ERROR!
+                (stmt-exp:()
+                    (assign:()
+                        (field-lookup:mut i32
                             (id:mut Cat
                                 (b))
                             (id
                                 (x)))
                         (id:mut i32
                             (x))))
-                (stmt-exp:ERROR!
-                    (assign:ERROR!
-                        (field-lookup:ERROR!
+                (stmt-exp:()
+                    (assign:()
+                        (field-lookup:mut [i32;2]
                             (id:mut Cat
                                 (b))
                             (id
                                 (y)))
                         (id:mut [i32;2]
                             (a))))
-                (stmt-exp:ERROR!
-                    (assign:ERROR!
-                        (arr-index:ERROR!
-                            (field-lookup:ERROR!
+                (stmt-exp:()
+                    (assign:()
+                        (arr-index:mut i32
+                            (field-lookup:mut [i32;2]
                                 (id:mut Cat
                                     (b))
                                 (id
