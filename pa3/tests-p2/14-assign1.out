@@ -1,0 +1,199 @@
+
+(crate:ERROR!
+    (items
+        (struct-def:ok!
+            (id
+                (Cat))
+            (field-defs
+                (field-def
+                    (id
+                        (x))
+                    (type-i32))
+                (field-def
+                    (id
+                        (y))
+                    (type-arr
+                        (type-i32)
+                        (lit-dec)))))
+        (fn-def:ERROR!
+            (id
+                (main))
+            (type-unit)
+            (block:ERROR!
+                (let:()
+                    (pat-mut-id
+                        (id
+                            (x)))
+                    (type-i32)
+                    (lit-dec:i32))
+                (stmt-exp:()
+                    (assign:()
+                        (id:mut i32
+                            (x))
+                        (lit-dec:i32)))
+                (stmt-exp:()
+                    (assign-add:()
+                        (id:mut i32
+                            (x))
+                        (add:i32
+                            (lit-dec:i32)
+                            (id:mut i32
+                                (x)))))
+                (stmt-exp:()
+                    (assign-mul:()
+                        (id:mut i32
+                            (x))
+                        (mul:i32
+                            (id:mut i32
+                                (x))
+                            (lit-dec:i32))))
+                (stmt-exp:()
+                    (assign-div:()
+                        (id:mut i32
+                            (x))
+                        (div:i32
+                            (lit-dec:i32)
+                            (id:mut i32
+                                (x)))))
+                (stmt-exp:()
+                    (assign-rem:()
+                        (id:mut i32
+                            (x))
+                        (rem:i32
+                            (id:mut i32
+                                (x))
+                            (lit-dec:i32))))
+                (let:()
+                    (pat-mut-id
+                        (id
+                            (a)))
+                    (type-bool)
+                    (true:bool))
+                (stmt-exp:()
+                    (assign:()
+                        (id:mut bool
+                            (a))
+                        (and:bool
+                            (true:bool)
+                            (id:mut bool
+                                (a)))))
+                (stmt-exp:()
+                    (assign:()
+                        (id:mut bool
+                            (a))
+                        (or:bool
+                            (id:mut bool
+                                (a))
+                            (false:bool))))
+                (let:()
+                    (pat-mut-id
+                        (id
+                            (a)))
+                    (type-arr
+                        (type-i32)
+                        (lit-dec))
+                    (arr:[i32;2]
+                        (exprs
+                            (lit-dec:i32)
+                            (lit-dec:i32))))
+                (stmt-exp:ERROR!
+                    (assign:ERROR!
+                        (arr-index:i32
+                            (id:mut [i32;2]
+                                (a))
+                            (lit-dec:i32))
+                        (add:i32
+                            (id:mut i32
+                                (x))
+                            (arr-index:i32
+                                (id:mut [i32;2]
+                                    (a))
+                                (lit-dec:i32)))))
+                (stmt-exp:ERROR!
+                    (assign-add:ERROR!
+                        (arr-index:i32
+                            (id:mut [i32;2]
+                                (a))
+                            (lit-dec:i32))
+                        (arr-index:i32
+                            (id:mut [i32;2]
+                                (a))
+                            (lit-dec:i32))))
+                (stmt-exp:()
+                    (assign:()
+                        (id:mut [i32;2]
+                            (a))
+                        (arr:[i32;2]
+                            (exprs
+                                (lit-dec:i32)
+                                (lit-dec:i32)))))
+                (let:()
+                    (pat-mut-id
+                        (id
+                            (b)))
+                    (id
+                        (Cat))
+                    (struct:Cat
+                        (id
+                            (Cat))
+                        (field-inits
+                            (field-init
+                                (id
+                                    (x))
+                                (lit-dec:i32))
+                            (field-init
+                                (id
+                                    (y))
+                                (arr:[i32;2]
+                                    (exprs
+                                        (lit-dec:i32)
+                                        (lit-dec:i32)))))))
+                (stmt-exp:ERROR!
+                    (assign:ERROR!
+                        (field-lookup:ERROR!
+                            (id:mut Cat
+                                (b))
+                            (id
+                                (x)))
+                        (id:mut i32
+                            (x))))
+                (stmt-exp:ERROR!
+                    (assign:ERROR!
+                        (field-lookup:ERROR!
+                            (id:mut Cat
+                                (b))
+                            (id
+                                (y)))
+                        (id:mut [i32;2]
+                            (a))))
+                (stmt-exp:ERROR!
+                    (assign:ERROR!
+                        (arr-index:ERROR!
+                            (field-lookup:ERROR!
+                                (id:mut Cat
+                                    (b))
+                                (id
+                                    (y)))
+                            (lit-dec:i32))
+                        (id:mut i32
+                            (x))))
+                (stmt-exp:()
+                    (assign:()
+                        (id:mut Cat
+                            (b))
+                        (struct:Cat
+                            (id
+                                (Cat))
+                            (field-inits
+                                (field-init
+                                    (id
+                                        (x))
+                                    (lit-dec:i32))
+                                (field-init
+                                    (id
+                                        (y))
+                                    (arr:[i32;2]
+                                        (exprs
+                                            (lit-dec:i32)
+                                            (lit-dec:i32))))))))
+                (unit:())))))

@@ -103,7 +103,7 @@
                                             (lit-dec:i32)))
                                     (lit-dec:i32))))))
                 (stmt-exp:ERROR!
-                    (add:ERROR!
+                    (gt:ERROR!
                         (arr-index:[i32;2]
                             (id:[[i32;2];3]
                                 (z))
@@ -128,16 +128,75 @@
                                     (z))
                                 (lit-dec:i32))
                             (lit-dec:i32))))
-                (add:i32
-                    (arr-index:i32
-                        (arr-index:[i32;2]
-                            (id:[[i32;2];3]
-                                (z))
+                (stmt-exp:()
+                    (lt:bool
+                        (arr-index:i32
+                            (arr-index:[i32;2]
+                                (id:[[i32;2];3]
+                                    (z))
+                                (lit-dec:i32))
                             (lit-dec:i32))
-                        (lit-dec:i32))
-                    (arr-index:i32
-                        (arr-index:[i32;2]
-                            (id:[[i32;2];3]
-                                (z))
-                            (lit-dec:i32))
-                        (lit-dec:i32)))))))
+                        (arr-index:i32
+                            (arr-index:[i32;2]
+                                (id:[[i32;2];3]
+                                    (z))
+                                (lit-dec:i32))
+                            (lit-dec:i32))))
+                (stmt-exp:()
+                    (neq:bool
+                        (id:ERROR!
+                            (x))
+                        (id:ERROR!
+                            (y))))
+                (stmt-exp:()
+                    (eq:bool
+                        (arr:[i32;3]
+                            (exprs
+                                (lit-dec:i32)
+                                (lit-dec:i32)
+                                (lit-dec:i32)))
+                        (arr:[i32;3]
+                            (exprs
+                                (lit-dec:i32)
+                                (lit-dec:i32)
+                                (lit-dec:i32)))))
+                (stmt-exp:ERROR!
+                    (neq:ERROR!
+                        (arr:[i32;3]
+                            (exprs
+                                (lit-dec:i32)
+                                (lit-dec:i32)
+                                (lit-dec:i32)))
+                        (arr:[bool;3]
+                            (exprs
+                                (true:bool)
+                                (false:bool)
+                                (true:bool)))))
+                (stmt-exp:ERROR!
+                    (eq:ERROR!
+                        (arr:[[i32;2];3]
+                            (exprs
+                                (arr:[i32;2]
+                                    (exprs
+                                        (lit-dec:i32)
+                                        (lit-dec:i32)))
+                                (arr:[i32;2]
+                                    (exprs
+                                        (lit-dec:i32)
+                                        (lit-dec:i32)))
+                                (arr:[i32;2]
+                                    (exprs
+                                        (lit-dec:i32)
+                                        (lit-dec:i32)))))
+                        (arr:[[i32;1];3]
+                            (exprs
+                                (arr:[i32;1]
+                                    (exprs
+                                        (lit-dec:i32)))
+                                (arr:[i32;1]
+                                    (exprs
+                                        (lit-dec:i32)))
+                                (arr:[i32;1]
+                                    (exprs
+                                        (lit-dec:i32)))))))
+                (unit:())))))
