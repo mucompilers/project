@@ -142,8 +142,8 @@
                                     (z))
                                 (lit-dec:i32))
                             (lit-dec:i32))))
-                (stmt-exp:()
-                    (neq:bool
+                (stmt-exp:ERROR!
+                    (neq:ERROR!
                         (id:ERROR!
                             (x))
                         (id:ERROR!
