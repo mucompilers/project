@@ -67,6 +67,8 @@ bool type_is_array(const struct type*);
 // Returns the "element" type for reference/box types and array types.. 
 struct type* type_get_elem(struct type*);
 
+Symbol type_get_id(struct type*);
+
 // Create (allocate) a new type as a copy of the parameter type.
 struct type* type_copy(const struct type* type);
 

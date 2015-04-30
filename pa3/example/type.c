@@ -178,6 +178,11 @@ struct type* type_get_elem(struct type* type) {
       return type->type;
 }
 
+Symbol type_get_id(struct type* type) {
+      type = strip_mut(type);
+      return type->id;
+}
+
 struct type* type_copy(const struct type* old) {
       assert(old);
 
