@@ -103,6 +103,20 @@ static struct env* build_env(GList* crate) {
             }
       }
 
+      // Adds types for builtin prints() and printi() functions.
+      // TODO: leak, some malloc'd data is only accessible via the env (as
+      // opposed to the AST), and won't get free'd.
+      env_insert(env, symbol_var(strdup("prints")), type_fn(
+                  g_list_append(NULL, GINT_TO_POINTER(
+                        param(pat_id(false, false, symbol_var(strdup("msg"))),
+                              type_ref(type_slice(type_u8()))))),
+                  type_unit()));
+      env_insert(env, symbol_var(strdup("printi")), type_fn(
+                  g_list_append(NULL, GINT_TO_POINTER(
+                        param(pat_id(false, false, symbol_var(strdup("msg"))),
+                              type_i32()))),
+                  type_unit()));
+
       return env;
 }
 
