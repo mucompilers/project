@@ -8,7 +8,7 @@ fn pow(x : i32, mut n : i32) -> i32 {
 }
 
 fn main() {
-      println!("{}", pow(2, 10));
-      println!("{}", pow(3, 4));
-      println!("{}", pow(20, 2));
+      printi(pow(2, 10));
+      printi(pow(3, 4));
+      printi(pow(20, 2));
 }

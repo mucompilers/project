@@ -3,7 +3,7 @@ fn fact(n : i32) -> i32 {
 }
 
 fn main() {
-      println!("{}", fact(1));
-      println!("{}", fact(5));
-      println!("{}", fact(10));
+      printi(fact(1));
+      printi(fact(5));
+      printi(fact(10));
 }

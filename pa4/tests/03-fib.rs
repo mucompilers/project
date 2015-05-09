@@ -6,7 +6,7 @@ fn fib(n : i32) -> i32 {
 fn main() {
       let mut n = 0;
       while (n < 8) {
-            println!("{}", fib(n));
+            printi(fib(n));
             n += 1;
       };
 }
