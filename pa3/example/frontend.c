@@ -111,7 +111,7 @@ static void check_main(struct env* env) {
 
       if (main_decl->kind == TYPE_FN) {
             if (main_decl->params // it has params...
-            || (main_decl->type && main_decl->type->kind != TYPE_UNIT)) { // ...or a non-unit return type.
+            || (main_decl->type && main_decl->type != type_unit())) { // ...or a non-unit return type.
                   printf("Error: main function has the wrong type.\n");
                   exit(1);
             }
@@ -370,7 +370,7 @@ static void annotate_stmt(struct stmt* stmt, struct env* env) {
             case STMT_RETURN: {
                   annotate_exp(stmt->exp, env);
                   struct type* expected = env_lookup(env, symbol_return());
-                  if (expected->kind == stmt->exp->type->kind) {
+                  if (type_eq(expected, stmt->exp->type)) {
                         stmt->type = type_unit();
                   } else stmt->type = type_error();
                   break;
@@ -396,7 +396,10 @@ static void annotate_item(struct item* item, struct env* env) {
                   env_insert(lenv, symbol_return(), item->fn_def.type->type);
                   for (GList* p = item->fn_def.type->params; p; p = p->next) {
                         struct pair* param = p->data;
-                        env_insert(lenv, param->param.pat->bind.id, param->param.type);
+                        // TODO (leak)
+                        if (param->param.pat->bind.mut) {
+                              env_insert(lenv, param->param.pat->bind.id, type_mut(param->param.type));
+                        } else env_insert(lenv, param->param.pat->bind.id, param->param.type);
                   }
                   annotate_exp(item->fn_def.block, lenv);
                   env_destroy(lenv);
