@@ -1,0 +1,6413 @@
+Terminals unused in grammar
+
+   AS
+   SHL
+   SHR
+   BITAND
+   BITXOR
+   RANGE
+   BITAND_ASSIGN
+   BITXOR_ASSIGN
+   BITOR_ASSIGN
+   SHL_ASSIGN
+   SHR_ASSIGN
+   DIRECTIVE
+   DIRECTIVE_FEATURE
+   APOST
+   DOLLAR
+   TRIPLE_DOT
+   ABSTRACT
+   ALIGNOF
+   BE
+   BREAK
+   CASE
+   CONST
+   CONTINUE
+   CRATE
+   DO
+   EXTERN
+   FINAL
+   FOR
+   IMPL
+   IN
+   MACRO
+   MACRO_RULES
+   MOD
+   MOVE
+   OFFSETOF
+   OVERRIDE
+   PRIV
+   PUB
+   PURE
+   SIZEOF
+   STATIC
+   SELF
+   SUPER
+   TRAIT
+   TYPE
+   TYPEOF
+   UNKNOWN
+   UNSAFE
+   UNSIZED
+   USE
+   VIRTUAL
+   WHERE
+   YIELD
+   UNIT
+   U16
+   U32
+   U64
+   I8
+   I16
+   I64
+   F32
+   F64
+   USIZE
+   ISIZE
+   CHAR
+   STR
+   FLSUFFi
+   EXCOMMA_L
+   EXCOMMA_H
+   NOT
+   FNCALLEXP
+   FLUPSHIFT
+   NULLLIST
+   END
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: crate
+
+    2 crate: items
+
+    3 items: item items
+    4      | item
+
+    5 item: fn-def
+    6     | enum-def
+    7     | struct-def
+
+    8 fn-def: FN ID LPAREN RPAREN block
+    9       | FN ID LPAREN RPAREN FUNCTION_ARROW ret block
+   10       | FN ID LPAREN fn-params RPAREN block
+   11       | FN ID LPAREN fn-params RPAREN FUNCTION_ARROW ret block
+   12       | FN ID LPAREN fn-params RPAREN FUNCTION_ARROW EXCLAMATION block
+   13       | FN ID LPAREN RPAREN FUNCTION_ARROW EXCLAMATION block
+
+   14 fn-params: fn-param COMMA fn-params
+   15          | fn-param
+
+   16 fn-param: pat-type-annot
+
+   17 pat-type-annot: pat COLON type
+
+   18 ret: type
+
+   19 enum-def: ENUM ID LCURLY enum-ctor-defs RCURLY
+
+   20 enum-ctor-defs: enum-ctor-def COMMA enum-ctor-defs
+   21               | enum-ctor-def
+
+   22 enum-ctor-def: ID
+   23              | ID LPAREN ctor-types RPAREN
+
+   24 ctor-types: type COMMA ctor-types
+   25           | type
+
+   26 struct-def: STRUCT ID LCURLY type-annots RCURLY
+
+   27 type-annots: type-annot COMMA type-annots
+   28            | type-annot
+
+   29 type-annot: ID COLON type
+
+   30 block: LCURLY stmts RCURLY
+   31      | LCURLY RCURLY
+
+   32 stmts: stmt stmts
+   33      | stmt
+   34      | exp
+
+   35 stmt: exp SEMICOLON
+   36     | RETURN exp SEMICOLON
+   37     | RETURN SEMICOLON
+   38     | let SEMICOLON
+
+   39 let: LET pat
+   40    | LET pat COLON type ASSIGNMENT exp
+   41    | LET pat ASSIGNMENT exp
+   42    | LET pat COLON type
+
+   43 exp: literal
+   44    | LPAREN exp RPAREN
+   45    | ID
+   46    | LPAREN RPAREN
+   47    | or
+   48    | and
+   49    | eq
+   50    | neq
+   51    | lt
+   52    | gt
+   53    | geq
+   54    | leq
+   55    | add
+   56    | sub
+   57    | mul
+   58    | div
+   59    | rem
+   60    | neg
+   61    | not
+   62    | deref
+   63    | addr-of
+   64    | addr-of-mut
+   65    | assign
+   66    | fn-call
+   67    | if
+   68    | while
+   69    | loop
+   70    | box-new
+   71    | arr-index
+   72    | flup
+   73    | match
+
+   74 or: exp BOOL_OR exp
+
+   75 and: exp BOOL_AND exp
+
+   76 eq: exp EQ exp
+
+   77 neq: exp NE exp
+
+   78 lt: exp LT exp
+
+   79 gt: exp GT exp
+
+   80 leq: exp LE exp
+
+   81 geq: exp GE exp
+
+   82 add: exp ADD exp
+
+   83 sub: exp NEGATIVE_SIGN exp
+
+   84 mul: exp ASTERISK exp
+
+   85 div: exp DIV exp
+
+   86 rem: exp REM exp
+
+   87 neg: NEGATIVE_SIGN exp
+
+   88 not: EXCLAMATION exp
+
+   89 deref: ASTERISK exp
+
+   90 addr-of: ADDRESS exp
+
+   91 addr-of-mut: ADDRESS MUT exp
+
+   92 assign: ID assign-op exp
+   93       | flup assign-op exp
+   94       | arr-index assign-op exp
+
+   95 assign-op: PLUS_ASSIGN
+   96          | SUB_ASSIGN
+   97          | MUL_ASSIGN
+   98          | DIV_ASSIGN
+   99          | REM_ASSIGN
+  100          | ASSIGNMENT
+
+  101 fn-call: ID LPAREN exps RPAREN
+  102        | ID LPAREN RPAREN
+
+  103 exps: exp COMMA exps
+  104     | exp
+
+  105 if: IF LPAREN exp RPAREN block ELSE block
+  106   | IF LPAREN exp RPAREN block
+
+  107 while: WHILE LPAREN exp RPAREN block
+
+  108 loop: LOOP block
+
+  109 box-new: BOX PATH NEW LPAREN exp RPAREN
+
+  110 arr-index: ID LSQUARE exp RSQUARE
+  111          | fn-call LSQUARE exp RSQUARE
+  112          | arr-index LSQUARE exp RSQUARE
+
+  113 flup: flup1 DOT flup2
+
+  114 flup2: ID
+  115      | arr-index
+
+  116 flup1: flup1 DOT ID
+  117      | flup1 DOT arr-index
+  118      | ID
+  119      | arr-index
+  120      | fn-call
+
+  121 match: MATCH LPAREN exp RPAREN LCURLY match-arms RCURLY
+
+  122 match-arms: match-arm COMMA match-arms
+  123           | match-arm
+
+  124 match-arm: pat-or MATCH_ARROW block
+
+  125 pat-or: pat BITOR pat-or
+  126       | pat
+
+  127 pat: name-bind
+  128    | prim-lit
+  129    | NEGATIVE_SIGN LITDEC
+  130    | LPAREN RPAREN
+  131    | pat-deref
+  132    | UNDERSCORE
+  133    | pat-arr
+  134    | pat-enum
+  135    | pat-struct
+
+  136 name-bind: ID
+  137          | REF ID
+  138          | REF MUT ID
+  139          | MUT ID
+
+  140 pat-deref: ADDRESS pat
+
+  141 pat-arr: LSQUARE array-elmts RSQUARE
+
+  142 pat-enum: ID PATH ID LPAREN ctor-elmts RPAREN
+  143         | ID PATH ID
+
+  144 pat-struct: ID LCURLY id-pat-annots RCURLY
+
+  145 array-elmts: pat COMMA array-elmts
+  146            | pat
+
+  147 ctor-elmts: pat COMMA ctor-elmts
+  148           | pat
+
+  149 id-pat-annots: id-pat-annot COMMA id-pat-annots
+  150              | id-pat-annot
+
+  151 id-pat-annot: ID COLON pat
+
+  152 type: ID
+  153     | BOOL
+  154     | U8
+  155     | I32
+  156     | LPAREN RPAREN
+  157     | LSQUARE type RSQUARE
+  158     | LSQUARE type SEMICOLON LITDEC RSQUARE
+  159     | ADDRESS type
+  160     | ADDRESS MUT type
+  161     | BOX LT type GT
+
+  162 literal: prim-lit
+  163        | comp-lit
+
+  164 prim-lit: lit-bool
+  165         | LITCHAR
+  166         | LITDEC
+  167         | LITSTR
+
+  168 comp-lit: lit-enum
+  169         | lit-struct
+  170         | lit-array
+
+  171 lit-bool: TRU
+  172         | FALS
+
+  173 lit-enum: ID PATH ID
+  174         | ID PATH ID LPAREN enum-exps RPAREN
+
+  175 enum-exps: exp COMMA enum-exps
+  176          | exp
+
+  177 lit-struct: ID LCURLY id-exp-annots RCURLY
+
+  178 id-exp-annots: id-exp-annot COMMA id-exp-annots
+  179              | id-exp-annot
+
+  180 id-exp-annot: ID COLON exp
+
+  181 lit-array: LSQUARE enum-exps RSQUARE
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+BOOL_OR (258) 74
+BOOL_AND (259) 75
+ADD (260) 82
+NEGATIVE_SIGN (261) 83 87 129
+ASTERISK (262) 84 89
+DIV (263) 85
+EXCLAMATION (264) 12 13 88
+EQ (265) 76
+NE (266) 77
+REM (267) 86
+LT (268) 78 161
+GT (269) 79 161
+LE (270) 80
+GE (271) 81
+ADDRESS (272) 90 91 140 159 160
+LPAREN (273) 8 9 10 11 12 13 23 44 46 101 102 105 106 107 109 121 130
+    142 156 174
+RPAREN (274) 8 9 10 11 12 13 23 44 46 101 102 105 106 107 109 121 130
+    142 156 174
+MUT (275) 91 138 139 160
+AS (276)
+SHL (277)
+SHR (278)
+BITAND (279)
+BITXOR (280)
+BITOR (281) 125
+ASSIGNMENT (282) 40 41 100
+RANGE (283)
+PLUS_ASSIGN (284) 95
+SUB_ASSIGN (285) 96
+MUL_ASSIGN (286) 97
+DIV_ASSIGN (287) 98
+REM_ASSIGN (288) 99
+BITAND_ASSIGN (289)
+BITXOR_ASSIGN (290)
+BITOR_ASSIGN (291)
+SHL_ASSIGN (292)
+SHR_ASSIGN (293)
+PATH (294) 109 142 143 173 174
+FUNCTION_ARROW (295) 9 11 12 13
+MATCH_ARROW (296) 124
+DIRECTIVE (297)
+DIRECTIVE_FEATURE (298)
+APOST (299)
+DOLLAR (300)
+LSQUARE (301) 110 111 112 141 157 158 181
+RSQUARE (302) 110 111 112 141 157 158 181
+LCURLY (303) 19 26 30 31 121 144 177
+RCURLY (304) 19 26 30 31 121 144 177
+TRIPLE_DOT (305)
+DOT (306) 113 116 117
+COMMA (307) 14 20 24 27 103 122 145 147 149 175 178
+COLON (308) 17 29 40 42 151 180
+SEMICOLON (309) 35 36 37 38 158
+ABSTRACT (310)
+ALIGNOF (311)
+BE (312)
+BOX (313) 109 161
+BREAK (314)
+CASE (315)
+CONST (316)
+CONTINUE (317)
+CRATE (318)
+DO (319)
+ELSE (320) 105
+ENUM (321) 19
+EXTERN (322)
+FINAL (323)
+FN (324) 8 9 10 11 12 13
+FOR (325)
+IF (326) 105 106
+IMPL (327)
+IN (328)
+LET (329) 39 40 41 42
+LOOP (330) 108
+MACRO (331)
+MACRO_RULES (332)
+MATCH (333) 121
+MOD (334)
+MOVE (335)
+NEW (336) 109
+OFFSETOF (337)
+OVERRIDE (338)
+PRIV (339)
+PUB (340)
+PURE (341)
+REF (342) 137 138
+RETURN (343) 36 37
+SIZEOF (344)
+STATIC (345)
+SELF (346)
+STRUCT (347) 26
+SUPER (348)
+TRAIT (349)
+TYPE (350)
+TYPEOF (351)
+UNKNOWN (352)
+UNSAFE (353)
+UNSIZED (354)
+USE (355)
+VIRTUAL (356)
+WHERE (357)
+WHILE (358) 107
+YIELD (359)
+UNIT (360)
+BOOL (361) 153
+U8 (362) 154
+U16 (363)
+U32 (364)
+U64 (365)
+I8 (366)
+I16 (367)
+I32 (368) 155
+I64 (369)
+F32 (370)
+F64 (371)
+USIZE (372)
+ISIZE (373)
+CHAR (374)
+STR (375)
+UNDERSCORE (376) 132
+LITDEC (377) 129 158 166
+ID (378) 8 9 10 11 12 13 19 22 23 26 29 45 92 101 102 110 114 116 118
+    136 137 138 139 142 143 144 151 152 173 174 177 180
+LITSTR (379) 167
+LITCHAR (380) 165
+FALS (381) 172
+TRU (382) 171
+ASSOPS (383)
+FLSUFFi (384)
+EXCOMMA_L (385)
+EXCOMMA_H (386)
+ADDRMUT (387)
+DEREF (388)
+UMINUS (389)
+NOT (390)
+FNCALLEXP (391)
+FLUPSHIFT (392)
+NULLLIST (393)
+END (394)
+
+
+Nonterminals, with rules where they appear
+
+$accept (140)
+    on left: 0
+program (141)
+    on left: 1, on right: 0
+crate (142)
+    on left: 2, on right: 1
+items (143)
+    on left: 3 4, on right: 2 3
+item (144)
+    on left: 5 6 7, on right: 3 4
+fn-def (145)
+    on left: 8 9 10 11 12 13, on right: 5
+fn-params (146)
+    on left: 14 15, on right: 10 11 12 14
+fn-param (147)
+    on left: 16, on right: 14 15
+pat-type-annot (148)
+    on left: 17, on right: 16
+ret (149)
+    on left: 18, on right: 9 11
+enum-def (150)
+    on left: 19, on right: 6
+enum-ctor-defs (151)
+    on left: 20 21, on right: 19 20
+enum-ctor-def (152)
+    on left: 22 23, on right: 20 21
+ctor-types (153)
+    on left: 24 25, on right: 23 24
+struct-def (154)
+    on left: 26, on right: 7
+type-annots (155)
+    on left: 27 28, on right: 26 27
+type-annot (156)
+    on left: 29, on right: 27 28
+block (157)
+    on left: 30 31, on right: 8 9 10 11 12 13 105 106 107 108 124
+stmts (158)
+    on left: 32 33 34, on right: 30 32
+stmt (159)
+    on left: 35 36 37 38, on right: 32 33
+let (160)
+    on left: 39 40 41 42, on right: 38
+exp (161)
+    on left: 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60
+    61 62 63 64 65 66 67 68 69 70 71 72 73, on right: 34 35 36 40 41
+    44 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93
+    94 103 104 105 106 107 109 110 111 112 121 175 176 180
+or (162)
+    on left: 74, on right: 47
+and (163)
+    on left: 75, on right: 48
+eq (164)
+    on left: 76, on right: 49
+neq (165)
+    on left: 77, on right: 50
+lt (166)
+    on left: 78, on right: 51
+gt (167)
+    on left: 79, on right: 52
+leq (168)
+    on left: 80, on right: 54
+geq (169)
+    on left: 81, on right: 53
+add (170)
+    on left: 82, on right: 55
+sub (171)
+    on left: 83, on right: 56
+mul (172)
+    on left: 84, on right: 57
+div (173)
+    on left: 85, on right: 58
+rem (174)
+    on left: 86, on right: 59
+neg (175)
+    on left: 87, on right: 60
+not (176)
+    on left: 88, on right: 61
+deref (177)
+    on left: 89, on right: 62
+addr-of (178)
+    on left: 90, on right: 63
+addr-of-mut (179)
+    on left: 91, on right: 64
+assign (180)
+    on left: 92 93 94, on right: 65
+assign-op (181)
+    on left: 95 96 97 98 99 100, on right: 92 93 94
+fn-call (182)
+    on left: 101 102, on right: 66 111 120
+exps (183)
+    on left: 103 104, on right: 101 103
+if (184)
+    on left: 105 106, on right: 67
+while (185)
+    on left: 107, on right: 68
+loop (186)
+    on left: 108, on right: 69
+box-new (187)
+    on left: 109, on right: 70
+arr-index (188)
+    on left: 110 111 112, on right: 71 94 112 115 117 119
+flup (189)
+    on left: 113, on right: 72 93
+flup2 (190)
+    on left: 114 115, on right: 113
+flup1 (191)
+    on left: 116 117 118 119 120, on right: 113 116 117
+match (192)
+    on left: 121, on right: 73
+match-arms (193)
+    on left: 122 123, on right: 121 122
+match-arm (194)
+    on left: 124, on right: 122 123
+pat-or (195)
+    on left: 125 126, on right: 124 125
+pat (196)
+    on left: 127 128 129 130 131 132 133 134 135, on right: 17 39 40
+    41 42 125 126 140 145 146 147 148 151
+name-bind (197)
+    on left: 136 137 138 139, on right: 127
+pat-deref (198)
+    on left: 140, on right: 131
+pat-arr (199)
+    on left: 141, on right: 133
+pat-enum (200)
+    on left: 142 143, on right: 134
+pat-struct (201)
+    on left: 144, on right: 135
+array-elmts (202)
+    on left: 145 146, on right: 141 145
+ctor-elmts (203)
+    on left: 147 148, on right: 142 147
+id-pat-annots (204)
+    on left: 149 150, on right: 144 149
+id-pat-annot (205)
+    on left: 151, on right: 149 150
+type (206)
+    on left: 152 153 154 155 156 157 158 159 160 161, on right: 17
+    18 24 25 29 40 42 157 158 159 160 161
+literal (207)
+    on left: 162 163, on right: 43
+prim-lit (208)
+    on left: 164 165 166 167, on right: 128 162
+comp-lit (209)
+    on left: 168 169 170, on right: 163
+lit-bool (210)
+    on left: 171 172, on right: 164
+lit-enum (211)
+    on left: 173 174, on right: 168
+enum-exps (212)
+    on left: 175 176, on right: 174 175 181
+lit-struct (213)
+    on left: 177, on right: 169
+id-exp-annots (214)
+    on left: 178 179, on right: 177 178
+id-exp-annot (215)
+    on left: 180, on right: 178 179
+lit-array (216)
+    on left: 181, on right: 170
+
+
+State 0
+
+    0 $accept: . program $end
+
+    ENUM    shift, and go to state 1
+    FN      shift, and go to state 2
+    STRUCT  shift, and go to state 3
+
+    program     go to state 4
+    crate       go to state 5
+    items       go to state 6
+    item        go to state 7
+    fn-def      go to state 8
+    enum-def    go to state 9
+    struct-def  go to state 10
+
+
+State 1
+
+   19 enum-def: ENUM . ID LCURLY enum-ctor-defs RCURLY
+
+    ID  shift, and go to state 11
+
+
+State 2
+
+    8 fn-def: FN . ID LPAREN RPAREN block
+    9       | FN . ID LPAREN RPAREN FUNCTION_ARROW ret block
+   10       | FN . ID LPAREN fn-params RPAREN block
+   11       | FN . ID LPAREN fn-params RPAREN FUNCTION_ARROW ret block
+   12       | FN . ID LPAREN fn-params RPAREN FUNCTION_ARROW EXCLAMATION block
+   13       | FN . ID LPAREN RPAREN FUNCTION_ARROW EXCLAMATION block
+
+    ID  shift, and go to state 12
+
+
+State 3
+
+   26 struct-def: STRUCT . ID LCURLY type-annots RCURLY
+
+    ID  shift, and go to state 13
+
+
+State 4
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 14
+
+
+State 5
+
+    1 program: crate .
+
+    $default  reduce using rule 1 (program)
+
+
+State 6
+
+    2 crate: items .
+
+    $default  reduce using rule 2 (crate)
+
+
+State 7
+
+    3 items: item . items
+    4      | item .
+
+    ENUM    shift, and go to state 1
+    FN      shift, and go to state 2
+    STRUCT  shift, and go to state 3
+
+    $default  reduce using rule 4 (items)
+
+    items       go to state 15
+    item        go to state 7
+    fn-def      go to state 8
+    enum-def    go to state 9
+    struct-def  go to state 10
+
+
+State 8
+
+    5 item: fn-def .
+
+    $default  reduce using rule 5 (item)
+
+
+State 9
+
+    6 item: enum-def .
+
+    $default  reduce using rule 6 (item)
+
+
+State 10
+
+    7 item: struct-def .
+
+    $default  reduce using rule 7 (item)
+
+
+State 11
+
+   19 enum-def: ENUM ID . LCURLY enum-ctor-defs RCURLY
+
+    LCURLY  shift, and go to state 16
+
+
+State 12
+
+    8 fn-def: FN ID . LPAREN RPAREN block
+    9       | FN ID . LPAREN RPAREN FUNCTION_ARROW ret block
+   10       | FN ID . LPAREN fn-params RPAREN block
+   11       | FN ID . LPAREN fn-params RPAREN FUNCTION_ARROW ret block
+   12       | FN ID . LPAREN fn-params RPAREN FUNCTION_ARROW EXCLAMATION block
+   13       | FN ID . LPAREN RPAREN FUNCTION_ARROW EXCLAMATION block
+
+    LPAREN  shift, and go to state 17
+
+
+State 13
+
+   26 struct-def: STRUCT ID . LCURLY type-annots RCURLY
+
+    LCURLY  shift, and go to state 18
+
+
+State 14
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 15
+
+    3 items: item items .
+
+    $default  reduce using rule 3 (items)
+
+
+State 16
+
+   19 enum-def: ENUM ID LCURLY . enum-ctor-defs RCURLY
+
+    ID  shift, and go to state 19
+
+    enum-ctor-defs  go to state 20
+    enum-ctor-def   go to state 21
+
+
+State 17
+
+    8 fn-def: FN ID LPAREN . RPAREN block
+    9       | FN ID LPAREN . RPAREN FUNCTION_ARROW ret block
+   10       | FN ID LPAREN . fn-params RPAREN block
+   11       | FN ID LPAREN . fn-params RPAREN FUNCTION_ARROW ret block
+   12       | FN ID LPAREN . fn-params RPAREN FUNCTION_ARROW EXCLAMATION block
+   13       | FN ID LPAREN . RPAREN FUNCTION_ARROW EXCLAMATION block
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    RPAREN         shift, and go to state 25
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    fn-params       go to state 36
+    fn-param        go to state 37
+    pat-type-annot  go to state 38
+    pat             go to state 39
+    name-bind       go to state 40
+    pat-deref       go to state 41
+    pat-arr         go to state 42
+    pat-enum        go to state 43
+    pat-struct      go to state 44
+    prim-lit        go to state 45
+    lit-bool        go to state 46
+
+
+State 18
+
+   26 struct-def: STRUCT ID LCURLY . type-annots RCURLY
+
+    ID  shift, and go to state 47
+
+    type-annots  go to state 48
+    type-annot   go to state 49
+
+
+State 19
+
+   22 enum-ctor-def: ID .
+   23              | ID . LPAREN ctor-types RPAREN
+
+    LPAREN  shift, and go to state 50
+
+    $default  reduce using rule 22 (enum-ctor-def)
+
+
+State 20
+
+   19 enum-def: ENUM ID LCURLY enum-ctor-defs . RCURLY
+
+    RCURLY  shift, and go to state 51
+
+
+State 21
+
+   20 enum-ctor-defs: enum-ctor-def . COMMA enum-ctor-defs
+   21               | enum-ctor-def .
+
+    COMMA  shift, and go to state 52
+
+    $default  reduce using rule 21 (enum-ctor-defs)
+
+
+State 22
+
+  129 pat: NEGATIVE_SIGN . LITDEC
+
+    LITDEC  shift, and go to state 53
+
+
+State 23
+
+  140 pat-deref: ADDRESS . pat
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    pat         go to state 54
+    name-bind   go to state 40
+    pat-deref   go to state 41
+    pat-arr     go to state 42
+    pat-enum    go to state 43
+    pat-struct  go to state 44
+    prim-lit    go to state 45
+    lit-bool    go to state 46
+
+
+State 24
+
+  130 pat: LPAREN . RPAREN
+
+    RPAREN  shift, and go to state 55
+
+
+State 25
+
+    8 fn-def: FN ID LPAREN RPAREN . block
+    9       | FN ID LPAREN RPAREN . FUNCTION_ARROW ret block
+   13       | FN ID LPAREN RPAREN . FUNCTION_ARROW EXCLAMATION block
+
+    FUNCTION_ARROW  shift, and go to state 56
+    LCURLY          shift, and go to state 57
+
+    block  go to state 58
+
+
+State 26
+
+  139 name-bind: MUT . ID
+
+    ID  shift, and go to state 59
+
+
+State 27
+
+  141 pat-arr: LSQUARE . array-elmts RSQUARE
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    pat          go to state 60
+    name-bind    go to state 40
+    pat-deref    go to state 41
+    pat-arr      go to state 42
+    pat-enum     go to state 43
+    pat-struct   go to state 44
+    array-elmts  go to state 61
+    prim-lit     go to state 45
+    lit-bool     go to state 46
+
+
+State 28
+
+  137 name-bind: REF . ID
+  138          | REF . MUT ID
+
+    MUT  shift, and go to state 62
+    ID   shift, and go to state 63
+
+
+State 29
+
+  132 pat: UNDERSCORE .
+
+    $default  reduce using rule 132 (pat)
+
+
+State 30
+
+  166 prim-lit: LITDEC .
+
+    $default  reduce using rule 166 (prim-lit)
+
+
+State 31
+
+  136 name-bind: ID .
+  142 pat-enum: ID . PATH ID LPAREN ctor-elmts RPAREN
+  143         | ID . PATH ID
+  144 pat-struct: ID . LCURLY id-pat-annots RCURLY
+
+    PATH    shift, and go to state 64
+    LCURLY  shift, and go to state 65
+
+    $default  reduce using rule 136 (name-bind)
+
+
+State 32
+
+  167 prim-lit: LITSTR .
+
+    $default  reduce using rule 167 (prim-lit)
+
+
+State 33
+
+  165 prim-lit: LITCHAR .
+
+    $default  reduce using rule 165 (prim-lit)
+
+
+State 34
+
+  172 lit-bool: FALS .
+
+    $default  reduce using rule 172 (lit-bool)
+
+
+State 35
+
+  171 lit-bool: TRU .
+
+    $default  reduce using rule 171 (lit-bool)
+
+
+State 36
+
+   10 fn-def: FN ID LPAREN fn-params . RPAREN block
+   11       | FN ID LPAREN fn-params . RPAREN FUNCTION_ARROW ret block
+   12       | FN ID LPAREN fn-params . RPAREN FUNCTION_ARROW EXCLAMATION block
+
+    RPAREN  shift, and go to state 66
+
+
+State 37
+
+   14 fn-params: fn-param . COMMA fn-params
+   15          | fn-param .
+
+    COMMA  shift, and go to state 67
+
+    $default  reduce using rule 15 (fn-params)
+
+
+State 38
+
+   16 fn-param: pat-type-annot .
+
+    $default  reduce using rule 16 (fn-param)
+
+
+State 39
+
+   17 pat-type-annot: pat . COLON type
+
+    COLON  shift, and go to state 68
+
+
+State 40
+
+  127 pat: name-bind .
+
+    $default  reduce using rule 127 (pat)
+
+
+State 41
+
+  131 pat: pat-deref .
+
+    $default  reduce using rule 131 (pat)
+
+
+State 42
+
+  133 pat: pat-arr .
+
+    $default  reduce using rule 133 (pat)
+
+
+State 43
+
+  134 pat: pat-enum .
+
+    $default  reduce using rule 134 (pat)
+
+
+State 44
+
+  135 pat: pat-struct .
+
+    $default  reduce using rule 135 (pat)
+
+
+State 45
+
+  128 pat: prim-lit .
+
+    $default  reduce using rule 128 (pat)
+
+
+State 46
+
+  164 prim-lit: lit-bool .
+
+    $default  reduce using rule 164 (prim-lit)
+
+
+State 47
+
+   29 type-annot: ID . COLON type
+
+    COLON  shift, and go to state 69
+
+
+State 48
+
+   26 struct-def: STRUCT ID LCURLY type-annots . RCURLY
+
+    RCURLY  shift, and go to state 70
+
+
+State 49
+
+   27 type-annots: type-annot . COMMA type-annots
+   28            | type-annot .
+
+    COMMA  shift, and go to state 71
+
+    $default  reduce using rule 28 (type-annots)
+
+
+State 50
+
+   23 enum-ctor-def: ID LPAREN . ctor-types RPAREN
+
+    ADDRESS  shift, and go to state 72
+    LPAREN   shift, and go to state 73
+    LSQUARE  shift, and go to state 74
+    BOX      shift, and go to state 75
+    BOOL     shift, and go to state 76
+    U8       shift, and go to state 77
+    I32      shift, and go to state 78
+    ID       shift, and go to state 79
+
+    ctor-types  go to state 80
+    type        go to state 81
+
+
+State 51
+
+   19 enum-def: ENUM ID LCURLY enum-ctor-defs RCURLY .
+
+    $default  reduce using rule 19 (enum-def)
+
+
+State 52
+
+   20 enum-ctor-defs: enum-ctor-def COMMA . enum-ctor-defs
+
+    ID  shift, and go to state 19
+
+    enum-ctor-defs  go to state 82
+    enum-ctor-def   go to state 21
+
+
+State 53
+
+  129 pat: NEGATIVE_SIGN LITDEC .
+
+    $default  reduce using rule 129 (pat)
+
+
+State 54
+
+  140 pat-deref: ADDRESS pat .
+
+    $default  reduce using rule 140 (pat-deref)
+
+
+State 55
+
+  130 pat: LPAREN RPAREN .
+
+    $default  reduce using rule 130 (pat)
+
+
+State 56
+
+    9 fn-def: FN ID LPAREN RPAREN FUNCTION_ARROW . ret block
+   13       | FN ID LPAREN RPAREN FUNCTION_ARROW . EXCLAMATION block
+
+    EXCLAMATION  shift, and go to state 83
+    ADDRESS      shift, and go to state 72
+    LPAREN       shift, and go to state 73
+    LSQUARE      shift, and go to state 74
+    BOX          shift, and go to state 75
+    BOOL         shift, and go to state 76
+    U8           shift, and go to state 77
+    I32          shift, and go to state 78
+    ID           shift, and go to state 79
+
+    ret   go to state 84
+    type  go to state 85
+
+
+State 57
+
+   30 block: LCURLY . stmts RCURLY
+   31      | LCURLY . RCURLY
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    RCURLY         shift, and go to state 92
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LET            shift, and go to state 95
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    RETURN         shift, and go to state 98
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    stmts        go to state 101
+    stmt         go to state 102
+    let          go to state 103
+    exp          go to state 104
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 58
+
+    8 fn-def: FN ID LPAREN RPAREN block .
+
+    $default  reduce using rule 8 (fn-def)
+
+
+State 59
+
+  139 name-bind: MUT ID .
+
+    $default  reduce using rule 139 (name-bind)
+
+
+State 60
+
+  145 array-elmts: pat . COMMA array-elmts
+  146            | pat .
+
+    COMMA  shift, and go to state 139
+
+    $default  reduce using rule 146 (array-elmts)
+
+
+State 61
+
+  141 pat-arr: LSQUARE array-elmts . RSQUARE
+
+    RSQUARE  shift, and go to state 140
+
+
+State 62
+
+  138 name-bind: REF MUT . ID
+
+    ID  shift, and go to state 141
+
+
+State 63
+
+  137 name-bind: REF ID .
+
+    $default  reduce using rule 137 (name-bind)
+
+
+State 64
+
+  142 pat-enum: ID PATH . ID LPAREN ctor-elmts RPAREN
+  143         | ID PATH . ID
+
+    ID  shift, and go to state 142
+
+
+State 65
+
+  144 pat-struct: ID LCURLY . id-pat-annots RCURLY
+
+    ID  shift, and go to state 143
+
+    id-pat-annots  go to state 144
+    id-pat-annot   go to state 145
+
+
+State 66
+
+   10 fn-def: FN ID LPAREN fn-params RPAREN . block
+   11       | FN ID LPAREN fn-params RPAREN . FUNCTION_ARROW ret block
+   12       | FN ID LPAREN fn-params RPAREN . FUNCTION_ARROW EXCLAMATION block
+
+    FUNCTION_ARROW  shift, and go to state 146
+    LCURLY          shift, and go to state 57
+
+    block  go to state 147
+
+
+State 67
+
+   14 fn-params: fn-param COMMA . fn-params
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    fn-params       go to state 148
+    fn-param        go to state 37
+    pat-type-annot  go to state 38
+    pat             go to state 39
+    name-bind       go to state 40
+    pat-deref       go to state 41
+    pat-arr         go to state 42
+    pat-enum        go to state 43
+    pat-struct      go to state 44
+    prim-lit        go to state 45
+    lit-bool        go to state 46
+
+
+State 68
+
+   17 pat-type-annot: pat COLON . type
+
+    ADDRESS  shift, and go to state 72
+    LPAREN   shift, and go to state 73
+    LSQUARE  shift, and go to state 74
+    BOX      shift, and go to state 75
+    BOOL     shift, and go to state 76
+    U8       shift, and go to state 77
+    I32      shift, and go to state 78
+    ID       shift, and go to state 79
+
+    type  go to state 149
+
+
+State 69
+
+   29 type-annot: ID COLON . type
+
+    ADDRESS  shift, and go to state 72
+    LPAREN   shift, and go to state 73
+    LSQUARE  shift, and go to state 74
+    BOX      shift, and go to state 75
+    BOOL     shift, and go to state 76
+    U8       shift, and go to state 77
+    I32      shift, and go to state 78
+    ID       shift, and go to state 79
+
+    type  go to state 150
+
+
+State 70
+
+   26 struct-def: STRUCT ID LCURLY type-annots RCURLY .
+
+    $default  reduce using rule 26 (struct-def)
+
+
+State 71
+
+   27 type-annots: type-annot COMMA . type-annots
+
+    ID  shift, and go to state 47
+
+    type-annots  go to state 151
+    type-annot   go to state 49
+
+
+State 72
+
+  159 type: ADDRESS . type
+  160     | ADDRESS . MUT type
+
+    ADDRESS  shift, and go to state 72
+    LPAREN   shift, and go to state 73
+    MUT      shift, and go to state 152
+    LSQUARE  shift, and go to state 74
+    BOX      shift, and go to state 75
+    BOOL     shift, and go to state 76
+    U8       shift, and go to state 77
+    I32      shift, and go to state 78
+    ID       shift, and go to state 79
+
+    type  go to state 153
+
+
+State 73
+
+  156 type: LPAREN . RPAREN
+
+    RPAREN  shift, and go to state 154
+
+
+State 74
+
+  157 type: LSQUARE . type RSQUARE
+  158     | LSQUARE . type SEMICOLON LITDEC RSQUARE
+
+    ADDRESS  shift, and go to state 72
+    LPAREN   shift, and go to state 73
+    LSQUARE  shift, and go to state 74
+    BOX      shift, and go to state 75
+    BOOL     shift, and go to state 76
+    U8       shift, and go to state 77
+    I32      shift, and go to state 78
+    ID       shift, and go to state 79
+
+    type  go to state 155
+
+
+State 75
+
+  161 type: BOX . LT type GT
+
+    LT  shift, and go to state 156
+
+
+State 76
+
+  153 type: BOOL .
+
+    $default  reduce using rule 153 (type)
+
+
+State 77
+
+  154 type: U8 .
+
+    $default  reduce using rule 154 (type)
+
+
+State 78
+
+  155 type: I32 .
+
+    $default  reduce using rule 155 (type)
+
+
+State 79
+
+  152 type: ID .
+
+    $default  reduce using rule 152 (type)
+
+
+State 80
+
+   23 enum-ctor-def: ID LPAREN ctor-types . RPAREN
+
+    RPAREN  shift, and go to state 157
+
+
+State 81
+
+   24 ctor-types: type . COMMA ctor-types
+   25           | type .
+
+    COMMA  shift, and go to state 158
+
+    $default  reduce using rule 25 (ctor-types)
+
+
+State 82
+
+   20 enum-ctor-defs: enum-ctor-def COMMA enum-ctor-defs .
+
+    $default  reduce using rule 20 (enum-ctor-defs)
+
+
+State 83
+
+   13 fn-def: FN ID LPAREN RPAREN FUNCTION_ARROW EXCLAMATION . block
+
+    LCURLY  shift, and go to state 57
+
+    block  go to state 159
+
+
+State 84
+
+    9 fn-def: FN ID LPAREN RPAREN FUNCTION_ARROW ret . block
+
+    LCURLY  shift, and go to state 57
+
+    block  go to state 160
+
+
+State 85
+
+   18 ret: type .
+
+    $default  reduce using rule 18 (ret)
+
+
+State 86
+
+   87 neg: NEGATIVE_SIGN . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 161
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 87
+
+   89 deref: ASTERISK . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 162
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 88
+
+   88 not: EXCLAMATION . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 163
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 89
+
+   90 addr-of: ADDRESS . exp
+   91 addr-of-mut: ADDRESS . MUT exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    MUT            shift, and go to state 164
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 165
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 90
+
+   44 exp: LPAREN . exp RPAREN
+   46    | LPAREN . RPAREN
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    RPAREN         shift, and go to state 166
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 167
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 91
+
+  181 lit-array: LSQUARE . enum-exps RSQUARE
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 168
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    enum-exps    go to state 169
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 92
+
+   31 block: LCURLY RCURLY .
+
+    $default  reduce using rule 31 (block)
+
+
+State 93
+
+  109 box-new: BOX . PATH NEW LPAREN exp RPAREN
+
+    PATH  shift, and go to state 170
+
+
+State 94
+
+  105 if: IF . LPAREN exp RPAREN block ELSE block
+  106   | IF . LPAREN exp RPAREN block
+
+    LPAREN  shift, and go to state 171
+
+
+State 95
+
+   39 let: LET . pat
+   40    | LET . pat COLON type ASSIGNMENT exp
+   41    | LET . pat ASSIGNMENT exp
+   42    | LET . pat COLON type
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    pat         go to state 172
+    name-bind   go to state 40
+    pat-deref   go to state 41
+    pat-arr     go to state 42
+    pat-enum    go to state 43
+    pat-struct  go to state 44
+    prim-lit    go to state 45
+    lit-bool    go to state 46
+
+
+State 96
+
+  108 loop: LOOP . block
+
+    LCURLY  shift, and go to state 57
+
+    block  go to state 173
+
+
+State 97
+
+  121 match: MATCH . LPAREN exp RPAREN LCURLY match-arms RCURLY
+
+    LPAREN  shift, and go to state 174
+
+
+State 98
+
+   36 stmt: RETURN . exp SEMICOLON
+   37     | RETURN . SEMICOLON
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    SEMICOLON      shift, and go to state 175
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 176
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 99
+
+  107 while: WHILE . LPAREN exp RPAREN block
+
+    LPAREN  shift, and go to state 177
+
+
+State 100
+
+   45 exp: ID .
+   92 assign: ID . assign-op exp
+  101 fn-call: ID . LPAREN exps RPAREN
+  102        | ID . LPAREN RPAREN
+  110 arr-index: ID . LSQUARE exp RSQUARE
+  118 flup1: ID .
+  173 lit-enum: ID . PATH ID
+  174         | ID . PATH ID LPAREN enum-exps RPAREN
+  177 lit-struct: ID . LCURLY id-exp-annots RCURLY
+
+    LPAREN       shift, and go to state 178
+    ASSIGNMENT   shift, and go to state 179
+    PLUS_ASSIGN  shift, and go to state 180
+    SUB_ASSIGN   shift, and go to state 181
+    MUL_ASSIGN   shift, and go to state 182
+    DIV_ASSIGN   shift, and go to state 183
+    REM_ASSIGN   shift, and go to state 184
+    PATH         shift, and go to state 185
+    LSQUARE      shift, and go to state 186
+    LCURLY       shift, and go to state 187
+
+    DOT       reduce using rule 118 (flup1)
+    $default  reduce using rule 45 (exp)
+
+    assign-op  go to state 188
+
+
+State 101
+
+   30 block: LCURLY stmts . RCURLY
+
+    RCURLY  shift, and go to state 189
+
+
+State 102
+
+   32 stmts: stmt . stmts
+   33      | stmt .
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LET            shift, and go to state 95
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    RETURN         shift, and go to state 98
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    $default  reduce using rule 33 (stmts)
+
+    stmts        go to state 190
+    stmt         go to state 102
+    let          go to state 103
+    exp          go to state 104
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 103
+
+   38 stmt: let . SEMICOLON
+
+    SEMICOLON  shift, and go to state 191
+
+
+State 104
+
+   34 stmts: exp .
+   35 stmt: exp . SEMICOLON
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    SEMICOLON      shift, and go to state 205
+
+    $default  reduce using rule 34 (stmts)
+
+
+State 105
+
+   47 exp: or .
+
+    $default  reduce using rule 47 (exp)
+
+
+State 106
+
+   48 exp: and .
+
+    $default  reduce using rule 48 (exp)
+
+
+State 107
+
+   49 exp: eq .
+
+    $default  reduce using rule 49 (exp)
+
+
+State 108
+
+   50 exp: neq .
+
+    $default  reduce using rule 50 (exp)
+
+
+State 109
+
+   51 exp: lt .
+
+    $default  reduce using rule 51 (exp)
+
+
+State 110
+
+   52 exp: gt .
+
+    $default  reduce using rule 52 (exp)
+
+
+State 111
+
+   54 exp: leq .
+
+    $default  reduce using rule 54 (exp)
+
+
+State 112
+
+   53 exp: geq .
+
+    $default  reduce using rule 53 (exp)
+
+
+State 113
+
+   55 exp: add .
+
+    $default  reduce using rule 55 (exp)
+
+
+State 114
+
+   56 exp: sub .
+
+    $default  reduce using rule 56 (exp)
+
+
+State 115
+
+   57 exp: mul .
+
+    $default  reduce using rule 57 (exp)
+
+
+State 116
+
+   58 exp: div .
+
+    $default  reduce using rule 58 (exp)
+
+
+State 117
+
+   59 exp: rem .
+
+    $default  reduce using rule 59 (exp)
+
+
+State 118
+
+   60 exp: neg .
+
+    $default  reduce using rule 60 (exp)
+
+
+State 119
+
+   61 exp: not .
+
+    $default  reduce using rule 61 (exp)
+
+
+State 120
+
+   62 exp: deref .
+
+    $default  reduce using rule 62 (exp)
+
+
+State 121
+
+   63 exp: addr-of .
+
+    $default  reduce using rule 63 (exp)
+
+
+State 122
+
+   64 exp: addr-of-mut .
+
+    $default  reduce using rule 64 (exp)
+
+
+State 123
+
+   65 exp: assign .
+
+    $default  reduce using rule 65 (exp)
+
+
+State 124
+
+   66 exp: fn-call .
+  111 arr-index: fn-call . LSQUARE exp RSQUARE
+  120 flup1: fn-call .
+
+    LSQUARE  shift, and go to state 206
+
+    DOT       reduce using rule 120 (flup1)
+    $default  reduce using rule 66 (exp)
+
+
+State 125
+
+   67 exp: if .
+
+    $default  reduce using rule 67 (exp)
+
+
+State 126
+
+   68 exp: while .
+
+    $default  reduce using rule 68 (exp)
+
+
+State 127
+
+   69 exp: loop .
+
+    $default  reduce using rule 69 (exp)
+
+
+State 128
+
+   70 exp: box-new .
+
+    $default  reduce using rule 70 (exp)
+
+
+State 129
+
+   71 exp: arr-index .
+   94 assign: arr-index . assign-op exp
+  112 arr-index: arr-index . LSQUARE exp RSQUARE
+  119 flup1: arr-index .
+
+    ASSIGNMENT   shift, and go to state 179
+    PLUS_ASSIGN  shift, and go to state 180
+    SUB_ASSIGN   shift, and go to state 181
+    MUL_ASSIGN   shift, and go to state 182
+    DIV_ASSIGN   shift, and go to state 183
+    REM_ASSIGN   shift, and go to state 184
+    LSQUARE      shift, and go to state 207
+
+    DOT       reduce using rule 119 (flup1)
+    $default  reduce using rule 71 (exp)
+
+    assign-op  go to state 208
+
+
+State 130
+
+   72 exp: flup .
+   93 assign: flup . assign-op exp
+
+    ASSIGNMENT   shift, and go to state 179
+    PLUS_ASSIGN  shift, and go to state 180
+    SUB_ASSIGN   shift, and go to state 181
+    MUL_ASSIGN   shift, and go to state 182
+    DIV_ASSIGN   shift, and go to state 183
+    REM_ASSIGN   shift, and go to state 184
+
+    $default  reduce using rule 72 (exp)
+
+    assign-op  go to state 209
+
+
+State 131
+
+  113 flup: flup1 . DOT flup2
+  116 flup1: flup1 . DOT ID
+  117      | flup1 . DOT arr-index
+
+    DOT  shift, and go to state 210
+
+
+State 132
+
+   73 exp: match .
+
+    $default  reduce using rule 73 (exp)
+
+
+State 133
+
+   43 exp: literal .
+
+    $default  reduce using rule 43 (exp)
+
+
+State 134
+
+  162 literal: prim-lit .
+
+    $default  reduce using rule 162 (literal)
+
+
+State 135
+
+  163 literal: comp-lit .
+
+    $default  reduce using rule 163 (literal)
+
+
+State 136
+
+  168 comp-lit: lit-enum .
+
+    $default  reduce using rule 168 (comp-lit)
+
+
+State 137
+
+  169 comp-lit: lit-struct .
+
+    $default  reduce using rule 169 (comp-lit)
+
+
+State 138
+
+  170 comp-lit: lit-array .
+
+    $default  reduce using rule 170 (comp-lit)
+
+
+State 139
+
+  145 array-elmts: pat COMMA . array-elmts
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    pat          go to state 60
+    name-bind    go to state 40
+    pat-deref    go to state 41
+    pat-arr      go to state 42
+    pat-enum     go to state 43
+    pat-struct   go to state 44
+    array-elmts  go to state 211
+    prim-lit     go to state 45
+    lit-bool     go to state 46
+
+
+State 140
+
+  141 pat-arr: LSQUARE array-elmts RSQUARE .
+
+    $default  reduce using rule 141 (pat-arr)
+
+
+State 141
+
+  138 name-bind: REF MUT ID .
+
+    $default  reduce using rule 138 (name-bind)
+
+
+State 142
+
+  142 pat-enum: ID PATH ID . LPAREN ctor-elmts RPAREN
+  143         | ID PATH ID .
+
+    LPAREN  shift, and go to state 212
+
+    $default  reduce using rule 143 (pat-enum)
+
+
+State 143
+
+  151 id-pat-annot: ID . COLON pat
+
+    COLON  shift, and go to state 213
+
+
+State 144
+
+  144 pat-struct: ID LCURLY id-pat-annots . RCURLY
+
+    RCURLY  shift, and go to state 214
+
+
+State 145
+
+  149 id-pat-annots: id-pat-annot . COMMA id-pat-annots
+  150              | id-pat-annot .
+
+    COMMA  shift, and go to state 215
+
+    $default  reduce using rule 150 (id-pat-annots)
+
+
+State 146
+
+   11 fn-def: FN ID LPAREN fn-params RPAREN FUNCTION_ARROW . ret block
+   12       | FN ID LPAREN fn-params RPAREN FUNCTION_ARROW . EXCLAMATION block
+
+    EXCLAMATION  shift, and go to state 216
+    ADDRESS      shift, and go to state 72
+    LPAREN       shift, and go to state 73
+    LSQUARE      shift, and go to state 74
+    BOX          shift, and go to state 75
+    BOOL         shift, and go to state 76
+    U8           shift, and go to state 77
+    I32          shift, and go to state 78
+    ID           shift, and go to state 79
+
+    ret   go to state 217
+    type  go to state 85
+
+
+State 147
+
+   10 fn-def: FN ID LPAREN fn-params RPAREN block .
+
+    $default  reduce using rule 10 (fn-def)
+
+
+State 148
+
+   14 fn-params: fn-param COMMA fn-params .
+
+    $default  reduce using rule 14 (fn-params)
+
+
+State 149
+
+   17 pat-type-annot: pat COLON type .
+
+    $default  reduce using rule 17 (pat-type-annot)
+
+
+State 150
+
+   29 type-annot: ID COLON type .
+
+    $default  reduce using rule 29 (type-annot)
+
+
+State 151
+
+   27 type-annots: type-annot COMMA type-annots .
+
+    $default  reduce using rule 27 (type-annots)
+
+
+State 152
+
+  160 type: ADDRESS MUT . type
+
+    ADDRESS  shift, and go to state 72
+    LPAREN   shift, and go to state 73
+    LSQUARE  shift, and go to state 74
+    BOX      shift, and go to state 75
+    BOOL     shift, and go to state 76
+    U8       shift, and go to state 77
+    I32      shift, and go to state 78
+    ID       shift, and go to state 79
+
+    type  go to state 218
+
+
+State 153
+
+  159 type: ADDRESS type .
+
+    $default  reduce using rule 159 (type)
+
+
+State 154
+
+  156 type: LPAREN RPAREN .
+
+    $default  reduce using rule 156 (type)
+
+
+State 155
+
+  157 type: LSQUARE type . RSQUARE
+  158     | LSQUARE type . SEMICOLON LITDEC RSQUARE
+
+    RSQUARE    shift, and go to state 219
+    SEMICOLON  shift, and go to state 220
+
+
+State 156
+
+  161 type: BOX LT . type GT
+
+    ADDRESS  shift, and go to state 72
+    LPAREN   shift, and go to state 73
+    LSQUARE  shift, and go to state 74
+    BOX      shift, and go to state 75
+    BOOL     shift, and go to state 76
+    U8       shift, and go to state 77
+    I32      shift, and go to state 78
+    ID       shift, and go to state 79
+
+    type  go to state 221
+
+
+State 157
+
+   23 enum-ctor-def: ID LPAREN ctor-types RPAREN .
+
+    $default  reduce using rule 23 (enum-ctor-def)
+
+
+State 158
+
+   24 ctor-types: type COMMA . ctor-types
+
+    ADDRESS  shift, and go to state 72
+    LPAREN   shift, and go to state 73
+    LSQUARE  shift, and go to state 74
+    BOX      shift, and go to state 75
+    BOOL     shift, and go to state 76
+    U8       shift, and go to state 77
+    I32      shift, and go to state 78
+    ID       shift, and go to state 79
+
+    ctor-types  go to state 222
+    type        go to state 81
+
+
+State 159
+
+   13 fn-def: FN ID LPAREN RPAREN FUNCTION_ARROW EXCLAMATION block .
+
+    $default  reduce using rule 13 (fn-def)
+
+
+State 160
+
+    9 fn-def: FN ID LPAREN RPAREN FUNCTION_ARROW ret block .
+
+    $default  reduce using rule 9 (fn-def)
+
+
+State 161
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+   87 neg: NEGATIVE_SIGN exp .
+
+    $default  reduce using rule 87 (neg)
+
+
+State 162
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+   89 deref: ASTERISK exp .
+
+    $default  reduce using rule 89 (deref)
+
+
+State 163
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+   88 not: EXCLAMATION exp .
+
+    $default  reduce using rule 88 (not)
+
+
+State 164
+
+   91 addr-of-mut: ADDRESS MUT . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 223
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 165
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+   90 addr-of: ADDRESS exp .
+
+    $default  reduce using rule 90 (addr-of)
+
+
+State 166
+
+   46 exp: LPAREN RPAREN .
+
+    $default  reduce using rule 46 (exp)
+
+
+State 167
+
+   44 exp: LPAREN exp . RPAREN
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    RPAREN         shift, and go to state 224
+
+
+State 168
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+  175 enum-exps: exp . COMMA enum-exps
+  176          | exp .
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    COMMA          shift, and go to state 225
+
+    $default  reduce using rule 176 (enum-exps)
+
+
+State 169
+
+  181 lit-array: LSQUARE enum-exps . RSQUARE
+
+    RSQUARE  shift, and go to state 226
+
+
+State 170
+
+  109 box-new: BOX PATH . NEW LPAREN exp RPAREN
+
+    NEW  shift, and go to state 227
+
+
+State 171
+
+  105 if: IF LPAREN . exp RPAREN block ELSE block
+  106   | IF LPAREN . exp RPAREN block
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 228
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 172
+
+   39 let: LET pat .
+   40    | LET pat . COLON type ASSIGNMENT exp
+   41    | LET pat . ASSIGNMENT exp
+   42    | LET pat . COLON type
+
+    ASSIGNMENT  shift, and go to state 229
+    COLON       shift, and go to state 230
+
+    $default  reduce using rule 39 (let)
+
+
+State 173
+
+  108 loop: LOOP block .
+
+    $default  reduce using rule 108 (loop)
+
+
+State 174
+
+  121 match: MATCH LPAREN . exp RPAREN LCURLY match-arms RCURLY
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 231
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 175
+
+   37 stmt: RETURN SEMICOLON .
+
+    $default  reduce using rule 37 (stmt)
+
+
+State 176
+
+   36 stmt: RETURN exp . SEMICOLON
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    SEMICOLON      shift, and go to state 232
+
+
+State 177
+
+  107 while: WHILE LPAREN . exp RPAREN block
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 233
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 178
+
+  101 fn-call: ID LPAREN . exps RPAREN
+  102        | ID LPAREN . RPAREN
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    RPAREN         shift, and go to state 234
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 235
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    exps         go to state 236
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 179
+
+  100 assign-op: ASSIGNMENT .
+
+    $default  reduce using rule 100 (assign-op)
+
+
+State 180
+
+   95 assign-op: PLUS_ASSIGN .
+
+    $default  reduce using rule 95 (assign-op)
+
+
+State 181
+
+   96 assign-op: SUB_ASSIGN .
+
+    $default  reduce using rule 96 (assign-op)
+
+
+State 182
+
+   97 assign-op: MUL_ASSIGN .
+
+    $default  reduce using rule 97 (assign-op)
+
+
+State 183
+
+   98 assign-op: DIV_ASSIGN .
+
+    $default  reduce using rule 98 (assign-op)
+
+
+State 184
+
+   99 assign-op: REM_ASSIGN .
+
+    $default  reduce using rule 99 (assign-op)
+
+
+State 185
+
+  173 lit-enum: ID PATH . ID
+  174         | ID PATH . ID LPAREN enum-exps RPAREN
+
+    ID  shift, and go to state 237
+
+
+State 186
+
+  110 arr-index: ID LSQUARE . exp RSQUARE
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 238
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 187
+
+  177 lit-struct: ID LCURLY . id-exp-annots RCURLY
+
+    ID  shift, and go to state 239
+
+    id-exp-annots  go to state 240
+    id-exp-annot   go to state 241
+
+
+State 188
+
+   92 assign: ID assign-op . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 242
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 189
+
+   30 block: LCURLY stmts RCURLY .
+
+    $default  reduce using rule 30 (block)
+
+
+State 190
+
+   32 stmts: stmt stmts .
+
+    $default  reduce using rule 32 (stmts)
+
+
+State 191
+
+   38 stmt: let SEMICOLON .
+
+    $default  reduce using rule 38 (stmt)
+
+
+State 192
+
+   74 or: exp BOOL_OR . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 243
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 193
+
+   75 and: exp BOOL_AND . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 244
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 194
+
+   82 add: exp ADD . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 245
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 195
+
+   83 sub: exp NEGATIVE_SIGN . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 246
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 196
+
+   84 mul: exp ASTERISK . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 247
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 197
+
+   85 div: exp DIV . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 248
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 198
+
+   76 eq: exp EQ . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 249
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 199
+
+   77 neq: exp NE . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 250
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 200
+
+   86 rem: exp REM . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 251
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 201
+
+   78 lt: exp LT . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 252
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 202
+
+   79 gt: exp GT . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 253
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 203
+
+   80 leq: exp LE . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 254
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 204
+
+   81 geq: exp GE . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 255
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 205
+
+   35 stmt: exp SEMICOLON .
+
+    $default  reduce using rule 35 (stmt)
+
+
+State 206
+
+  111 arr-index: fn-call LSQUARE . exp RSQUARE
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 256
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 207
+
+  112 arr-index: arr-index LSQUARE . exp RSQUARE
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 257
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 208
+
+   94 assign: arr-index assign-op . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 258
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 209
+
+   93 assign: flup assign-op . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 259
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 210
+
+  113 flup: flup1 DOT . flup2
+  116 flup1: flup1 DOT . ID
+  117      | flup1 DOT . arr-index
+
+    ID  shift, and go to state 260
+
+    fn-call    go to state 261
+    arr-index  go to state 262
+    flup2      go to state 263
+
+
+State 211
+
+  145 array-elmts: pat COMMA array-elmts .
+
+    $default  reduce using rule 145 (array-elmts)
+
+
+State 212
+
+  142 pat-enum: ID PATH ID LPAREN . ctor-elmts RPAREN
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    pat         go to state 264
+    name-bind   go to state 40
+    pat-deref   go to state 41
+    pat-arr     go to state 42
+    pat-enum    go to state 43
+    pat-struct  go to state 44
+    ctor-elmts  go to state 265
+    prim-lit    go to state 45
+    lit-bool    go to state 46
+
+
+State 213
+
+  151 id-pat-annot: ID COLON . pat
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    pat         go to state 266
+    name-bind   go to state 40
+    pat-deref   go to state 41
+    pat-arr     go to state 42
+    pat-enum    go to state 43
+    pat-struct  go to state 44
+    prim-lit    go to state 45
+    lit-bool    go to state 46
+
+
+State 214
+
+  144 pat-struct: ID LCURLY id-pat-annots RCURLY .
+
+    $default  reduce using rule 144 (pat-struct)
+
+
+State 215
+
+  149 id-pat-annots: id-pat-annot COMMA . id-pat-annots
+
+    ID  shift, and go to state 143
+
+    id-pat-annots  go to state 267
+    id-pat-annot   go to state 145
+
+
+State 216
+
+   12 fn-def: FN ID LPAREN fn-params RPAREN FUNCTION_ARROW EXCLAMATION . block
+
+    LCURLY  shift, and go to state 57
+
+    block  go to state 268
+
+
+State 217
+
+   11 fn-def: FN ID LPAREN fn-params RPAREN FUNCTION_ARROW ret . block
+
+    LCURLY  shift, and go to state 57
+
+    block  go to state 269
+
+
+State 218
+
+  160 type: ADDRESS MUT type .
+
+    $default  reduce using rule 160 (type)
+
+
+State 219
+
+  157 type: LSQUARE type RSQUARE .
+
+    $default  reduce using rule 157 (type)
+
+
+State 220
+
+  158 type: LSQUARE type SEMICOLON . LITDEC RSQUARE
+
+    LITDEC  shift, and go to state 270
+
+
+State 221
+
+  161 type: BOX LT type . GT
+
+    GT  shift, and go to state 271
+
+
+State 222
+
+   24 ctor-types: type COMMA ctor-types .
+
+    $default  reduce using rule 24 (ctor-types)
+
+
+State 223
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+   91 addr-of-mut: ADDRESS MUT exp .
+
+    $default  reduce using rule 91 (addr-of-mut)
+
+
+State 224
+
+   44 exp: LPAREN exp RPAREN .
+
+    $default  reduce using rule 44 (exp)
+
+
+State 225
+
+  175 enum-exps: exp COMMA . enum-exps
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 168
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    enum-exps    go to state 272
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 226
+
+  181 lit-array: LSQUARE enum-exps RSQUARE .
+
+    $default  reduce using rule 181 (lit-array)
+
+
+State 227
+
+  109 box-new: BOX PATH NEW . LPAREN exp RPAREN
+
+    LPAREN  shift, and go to state 273
+
+
+State 228
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+  105 if: IF LPAREN exp . RPAREN block ELSE block
+  106   | IF LPAREN exp . RPAREN block
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    RPAREN         shift, and go to state 274
+
+
+State 229
+
+   41 let: LET pat ASSIGNMENT . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 275
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 230
+
+   40 let: LET pat COLON . type ASSIGNMENT exp
+   42    | LET pat COLON . type
+
+    ADDRESS  shift, and go to state 72
+    LPAREN   shift, and go to state 73
+    LSQUARE  shift, and go to state 74
+    BOX      shift, and go to state 75
+    BOOL     shift, and go to state 76
+    U8       shift, and go to state 77
+    I32      shift, and go to state 78
+    ID       shift, and go to state 79
+
+    type  go to state 276
+
+
+State 231
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+  121 match: MATCH LPAREN exp . RPAREN LCURLY match-arms RCURLY
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    RPAREN         shift, and go to state 277
+
+
+State 232
+
+   36 stmt: RETURN exp SEMICOLON .
+
+    $default  reduce using rule 36 (stmt)
+
+
+State 233
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+  107 while: WHILE LPAREN exp . RPAREN block
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    RPAREN         shift, and go to state 278
+
+
+State 234
+
+  102 fn-call: ID LPAREN RPAREN .
+
+    $default  reduce using rule 102 (fn-call)
+
+
+State 235
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+  103 exps: exp . COMMA exps
+  104     | exp .
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    COMMA          shift, and go to state 279
+
+    $default  reduce using rule 104 (exps)
+
+
+State 236
+
+  101 fn-call: ID LPAREN exps . RPAREN
+
+    RPAREN  shift, and go to state 280
+
+
+State 237
+
+  173 lit-enum: ID PATH ID .
+  174         | ID PATH ID . LPAREN enum-exps RPAREN
+
+    LPAREN  shift, and go to state 281
+
+    $default  reduce using rule 173 (lit-enum)
+
+
+State 238
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+  110 arr-index: ID LSQUARE exp . RSQUARE
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    RSQUARE        shift, and go to state 282
+
+
+State 239
+
+  180 id-exp-annot: ID . COLON exp
+
+    COLON  shift, and go to state 283
+
+
+State 240
+
+  177 lit-struct: ID LCURLY id-exp-annots . RCURLY
+
+    RCURLY  shift, and go to state 284
+
+
+State 241
+
+  178 id-exp-annots: id-exp-annot . COMMA id-exp-annots
+  179              | id-exp-annot .
+
+    COMMA  shift, and go to state 285
+
+    $default  reduce using rule 179 (id-exp-annots)
+
+
+State 242
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+   92 assign: ID assign-op exp .
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+
+    $default  reduce using rule 92 (assign)
+
+
+State 243
+
+   74 or: exp . BOOL_OR exp
+   74   | exp BOOL_OR exp .
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+
+    $default  reduce using rule 74 (or)
+
+
+State 244
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   75    | exp BOOL_AND exp .
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+
+    $default  reduce using rule 75 (and)
+
+
+State 245
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   82    | exp ADD exp .
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    ASTERISK  shift, and go to state 196
+    DIV       shift, and go to state 197
+    REM       shift, and go to state 200
+
+    $default  reduce using rule 82 (add)
+
+
+State 246
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   83    | exp NEGATIVE_SIGN exp .
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    ASTERISK  shift, and go to state 196
+    DIV       shift, and go to state 197
+    REM       shift, and go to state 200
+
+    $default  reduce using rule 83 (sub)
+
+
+State 247
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   84    | exp ASTERISK exp .
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    $default  reduce using rule 84 (mul)
+
+
+State 248
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   85    | exp DIV exp .
+   86 rem: exp . REM exp
+
+    $default  reduce using rule 85 (div)
+
+
+State 249
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   76   | exp EQ exp .
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    REM            shift, and go to state 200
+
+    $default  reduce using rule 76 (eq)
+
+
+State 250
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   77    | exp NE exp .
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    REM            shift, and go to state 200
+
+    $default  reduce using rule 77 (neq)
+
+
+State 251
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+   86    | exp REM exp .
+
+    $default  reduce using rule 86 (rem)
+
+
+State 252
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   78   | exp LT exp .
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    REM            shift, and go to state 200
+
+    $default  reduce using rule 78 (lt)
+
+
+State 253
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   79   | exp GT exp .
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    REM            shift, and go to state 200
+
+    $default  reduce using rule 79 (gt)
+
+
+State 254
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   80    | exp LE exp .
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    REM            shift, and go to state 200
+
+    $default  reduce using rule 80 (leq)
+
+
+State 255
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   81    | exp GE exp .
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    REM            shift, and go to state 200
+
+    $default  reduce using rule 81 (geq)
+
+
+State 256
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+  111 arr-index: fn-call LSQUARE exp . RSQUARE
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    RSQUARE        shift, and go to state 286
+
+
+State 257
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+  112 arr-index: arr-index LSQUARE exp . RSQUARE
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    RSQUARE        shift, and go to state 287
+
+
+State 258
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+   94 assign: arr-index assign-op exp .
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+
+    $default  reduce using rule 94 (assign)
+
+
+State 259
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+   93 assign: flup assign-op exp .
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+
+    $default  reduce using rule 93 (assign)
+
+
+State 260
+
+  101 fn-call: ID . LPAREN exps RPAREN
+  102        | ID . LPAREN RPAREN
+  110 arr-index: ID . LSQUARE exp RSQUARE
+  114 flup2: ID .
+  116 flup1: flup1 DOT ID .
+
+    LPAREN   shift, and go to state 178
+    LSQUARE  shift, and go to state 186
+
+    DOT       reduce using rule 116 (flup1)
+    $default  reduce using rule 114 (flup2)
+
+
+State 261
+
+  111 arr-index: fn-call . LSQUARE exp RSQUARE
+
+    LSQUARE  shift, and go to state 206
+
+
+State 262
+
+  112 arr-index: arr-index . LSQUARE exp RSQUARE
+  115 flup2: arr-index .
+  117 flup1: flup1 DOT arr-index .
+
+    LSQUARE  shift, and go to state 207
+
+    DOT       reduce using rule 117 (flup1)
+    $default  reduce using rule 115 (flup2)
+
+
+State 263
+
+  113 flup: flup1 DOT flup2 .
+
+    $default  reduce using rule 113 (flup)
+
+
+State 264
+
+  147 ctor-elmts: pat . COMMA ctor-elmts
+  148           | pat .
+
+    COMMA  shift, and go to state 288
+
+    $default  reduce using rule 148 (ctor-elmts)
+
+
+State 265
+
+  142 pat-enum: ID PATH ID LPAREN ctor-elmts . RPAREN
+
+    RPAREN  shift, and go to state 289
+
+
+State 266
+
+  151 id-pat-annot: ID COLON pat .
+
+    $default  reduce using rule 151 (id-pat-annot)
+
+
+State 267
+
+  149 id-pat-annots: id-pat-annot COMMA id-pat-annots .
+
+    $default  reduce using rule 149 (id-pat-annots)
+
+
+State 268
+
+   12 fn-def: FN ID LPAREN fn-params RPAREN FUNCTION_ARROW EXCLAMATION block .
+
+    $default  reduce using rule 12 (fn-def)
+
+
+State 269
+
+   11 fn-def: FN ID LPAREN fn-params RPAREN FUNCTION_ARROW ret block .
+
+    $default  reduce using rule 11 (fn-def)
+
+
+State 270
+
+  158 type: LSQUARE type SEMICOLON LITDEC . RSQUARE
+
+    RSQUARE  shift, and go to state 290
+
+
+State 271
+
+  161 type: BOX LT type GT .
+
+    $default  reduce using rule 161 (type)
+
+
+State 272
+
+  175 enum-exps: exp COMMA enum-exps .
+
+    $default  reduce using rule 175 (enum-exps)
+
+
+State 273
+
+  109 box-new: BOX PATH NEW LPAREN . exp RPAREN
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 291
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 274
+
+  105 if: IF LPAREN exp RPAREN . block ELSE block
+  106   | IF LPAREN exp RPAREN . block
+
+    LCURLY  shift, and go to state 57
+
+    block  go to state 292
+
+
+State 275
+
+   41 let: LET pat ASSIGNMENT exp .
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+
+    $default  reduce using rule 41 (let)
+
+
+State 276
+
+   40 let: LET pat COLON type . ASSIGNMENT exp
+   42    | LET pat COLON type .
+
+    ASSIGNMENT  shift, and go to state 293
+
+    $default  reduce using rule 42 (let)
+
+
+State 277
+
+  121 match: MATCH LPAREN exp RPAREN . LCURLY match-arms RCURLY
+
+    LCURLY  shift, and go to state 294
+
+
+State 278
+
+  107 while: WHILE LPAREN exp RPAREN . block
+
+    LCURLY  shift, and go to state 57
+
+    block  go to state 295
+
+
+State 279
+
+  103 exps: exp COMMA . exps
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 235
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    exps         go to state 296
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 280
+
+  101 fn-call: ID LPAREN exps RPAREN .
+
+    $default  reduce using rule 101 (fn-call)
+
+
+State 281
+
+  174 lit-enum: ID PATH ID LPAREN . enum-exps RPAREN
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 168
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    enum-exps    go to state 297
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 282
+
+  110 arr-index: ID LSQUARE exp RSQUARE .
+
+    $default  reduce using rule 110 (arr-index)
+
+
+State 283
+
+  180 id-exp-annot: ID COLON . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 298
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 284
+
+  177 lit-struct: ID LCURLY id-exp-annots RCURLY .
+
+    $default  reduce using rule 177 (lit-struct)
+
+
+State 285
+
+  178 id-exp-annots: id-exp-annot COMMA . id-exp-annots
+
+    ID  shift, and go to state 239
+
+    id-exp-annots  go to state 299
+    id-exp-annot   go to state 241
+
+
+State 286
+
+  111 arr-index: fn-call LSQUARE exp RSQUARE .
+
+    $default  reduce using rule 111 (arr-index)
+
+
+State 287
+
+  112 arr-index: arr-index LSQUARE exp RSQUARE .
+
+    $default  reduce using rule 112 (arr-index)
+
+
+State 288
+
+  147 ctor-elmts: pat COMMA . ctor-elmts
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    pat         go to state 264
+    name-bind   go to state 40
+    pat-deref   go to state 41
+    pat-arr     go to state 42
+    pat-enum    go to state 43
+    pat-struct  go to state 44
+    ctor-elmts  go to state 300
+    prim-lit    go to state 45
+    lit-bool    go to state 46
+
+
+State 289
+
+  142 pat-enum: ID PATH ID LPAREN ctor-elmts RPAREN .
+
+    $default  reduce using rule 142 (pat-enum)
+
+
+State 290
+
+  158 type: LSQUARE type SEMICOLON LITDEC RSQUARE .
+
+    $default  reduce using rule 158 (type)
+
+
+State 291
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+  109 box-new: BOX PATH NEW LPAREN exp . RPAREN
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+    RPAREN         shift, and go to state 301
+
+
+State 292
+
+  105 if: IF LPAREN exp RPAREN block . ELSE block
+  106   | IF LPAREN exp RPAREN block .
+
+    ELSE  shift, and go to state 302
+
+    $default  reduce using rule 106 (if)
+
+
+State 293
+
+   40 let: LET pat COLON type ASSIGNMENT . exp
+
+    NEGATIVE_SIGN  shift, and go to state 86
+    ASTERISK       shift, and go to state 87
+    EXCLAMATION    shift, and go to state 88
+    ADDRESS        shift, and go to state 89
+    LPAREN         shift, and go to state 90
+    LSQUARE        shift, and go to state 91
+    BOX            shift, and go to state 93
+    IF             shift, and go to state 94
+    LOOP           shift, and go to state 96
+    MATCH          shift, and go to state 97
+    WHILE          shift, and go to state 99
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 100
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    exp          go to state 303
+    or           go to state 105
+    and          go to state 106
+    eq           go to state 107
+    neq          go to state 108
+    lt           go to state 109
+    gt           go to state 110
+    leq          go to state 111
+    geq          go to state 112
+    add          go to state 113
+    sub          go to state 114
+    mul          go to state 115
+    div          go to state 116
+    rem          go to state 117
+    neg          go to state 118
+    not          go to state 119
+    deref        go to state 120
+    addr-of      go to state 121
+    addr-of-mut  go to state 122
+    assign       go to state 123
+    fn-call      go to state 124
+    if           go to state 125
+    while        go to state 126
+    loop         go to state 127
+    box-new      go to state 128
+    arr-index    go to state 129
+    flup         go to state 130
+    flup1        go to state 131
+    match        go to state 132
+    literal      go to state 133
+    prim-lit     go to state 134
+    comp-lit     go to state 135
+    lit-bool     go to state 46
+    lit-enum     go to state 136
+    lit-struct   go to state 137
+    lit-array    go to state 138
+
+
+State 294
+
+  121 match: MATCH LPAREN exp RPAREN LCURLY . match-arms RCURLY
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    match-arms  go to state 304
+    match-arm   go to state 305
+    pat-or      go to state 306
+    pat         go to state 307
+    name-bind   go to state 40
+    pat-deref   go to state 41
+    pat-arr     go to state 42
+    pat-enum    go to state 43
+    pat-struct  go to state 44
+    prim-lit    go to state 45
+    lit-bool    go to state 46
+
+
+State 295
+
+  107 while: WHILE LPAREN exp RPAREN block .
+
+    $default  reduce using rule 107 (while)
+
+
+State 296
+
+  103 exps: exp COMMA exps .
+
+    $default  reduce using rule 103 (exps)
+
+
+State 297
+
+  174 lit-enum: ID PATH ID LPAREN enum-exps . RPAREN
+
+    RPAREN  shift, and go to state 308
+
+
+State 298
+
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+  180 id-exp-annot: ID COLON exp .
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+
+    $default  reduce using rule 180 (id-exp-annot)
+
+
+State 299
+
+  178 id-exp-annots: id-exp-annot COMMA id-exp-annots .
+
+    $default  reduce using rule 178 (id-exp-annots)
+
+
+State 300
+
+  147 ctor-elmts: pat COMMA ctor-elmts .
+
+    $default  reduce using rule 147 (ctor-elmts)
+
+
+State 301
+
+  109 box-new: BOX PATH NEW LPAREN exp RPAREN .
+
+    $default  reduce using rule 109 (box-new)
+
+
+State 302
+
+  105 if: IF LPAREN exp RPAREN block ELSE . block
+
+    LCURLY  shift, and go to state 57
+
+    block  go to state 309
+
+
+State 303
+
+   40 let: LET pat COLON type ASSIGNMENT exp .
+   74 or: exp . BOOL_OR exp
+   75 and: exp . BOOL_AND exp
+   76 eq: exp . EQ exp
+   77 neq: exp . NE exp
+   78 lt: exp . LT exp
+   79 gt: exp . GT exp
+   80 leq: exp . LE exp
+   81 geq: exp . GE exp
+   82 add: exp . ADD exp
+   83 sub: exp . NEGATIVE_SIGN exp
+   84 mul: exp . ASTERISK exp
+   85 div: exp . DIV exp
+   86 rem: exp . REM exp
+
+    BOOL_OR        shift, and go to state 192
+    BOOL_AND       shift, and go to state 193
+    ADD            shift, and go to state 194
+    NEGATIVE_SIGN  shift, and go to state 195
+    ASTERISK       shift, and go to state 196
+    DIV            shift, and go to state 197
+    EQ             shift, and go to state 198
+    NE             shift, and go to state 199
+    REM            shift, and go to state 200
+    LT             shift, and go to state 201
+    GT             shift, and go to state 202
+    LE             shift, and go to state 203
+    GE             shift, and go to state 204
+
+    $default  reduce using rule 40 (let)
+
+
+State 304
+
+  121 match: MATCH LPAREN exp RPAREN LCURLY match-arms . RCURLY
+
+    RCURLY  shift, and go to state 310
+
+
+State 305
+
+  122 match-arms: match-arm . COMMA match-arms
+  123           | match-arm .
+
+    COMMA  shift, and go to state 311
+
+    $default  reduce using rule 123 (match-arms)
+
+
+State 306
+
+  124 match-arm: pat-or . MATCH_ARROW block
+
+    MATCH_ARROW  shift, and go to state 312
+
+
+State 307
+
+  125 pat-or: pat . BITOR pat-or
+  126       | pat .
+
+    BITOR  shift, and go to state 313
+
+    $default  reduce using rule 126 (pat-or)
+
+
+State 308
+
+  174 lit-enum: ID PATH ID LPAREN enum-exps RPAREN .
+
+    $default  reduce using rule 174 (lit-enum)
+
+
+State 309
+
+  105 if: IF LPAREN exp RPAREN block ELSE block .
+
+    $default  reduce using rule 105 (if)
+
+
+State 310
+
+  121 match: MATCH LPAREN exp RPAREN LCURLY match-arms RCURLY .
+
+    $default  reduce using rule 121 (match)
+
+
+State 311
+
+  122 match-arms: match-arm COMMA . match-arms
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    match-arms  go to state 314
+    match-arm   go to state 305
+    pat-or      go to state 306
+    pat         go to state 307
+    name-bind   go to state 40
+    pat-deref   go to state 41
+    pat-arr     go to state 42
+    pat-enum    go to state 43
+    pat-struct  go to state 44
+    prim-lit    go to state 45
+    lit-bool    go to state 46
+
+
+State 312
+
+  124 match-arm: pat-or MATCH_ARROW . block
+
+    LCURLY  shift, and go to state 57
+
+    block  go to state 315
+
+
+State 313
+
+  125 pat-or: pat BITOR . pat-or
+
+    NEGATIVE_SIGN  shift, and go to state 22
+    ADDRESS        shift, and go to state 23
+    LPAREN         shift, and go to state 24
+    MUT            shift, and go to state 26
+    LSQUARE        shift, and go to state 27
+    REF            shift, and go to state 28
+    UNDERSCORE     shift, and go to state 29
+    LITDEC         shift, and go to state 30
+    ID             shift, and go to state 31
+    LITSTR         shift, and go to state 32
+    LITCHAR        shift, and go to state 33
+    FALS           shift, and go to state 34
+    TRU            shift, and go to state 35
+
+    pat-or      go to state 316
+    pat         go to state 307
+    name-bind   go to state 40
+    pat-deref   go to state 41
+    pat-arr     go to state 42
+    pat-enum    go to state 43
+    pat-struct  go to state 44
+    prim-lit    go to state 45
+    lit-bool    go to state 46
+
+
+State 314
+
+  122 match-arms: match-arm COMMA match-arms .
+
+    $default  reduce using rule 122 (match-arms)
+
+
+State 315
+
+  124 match-arm: pat-or MATCH_ARROW block .
+
+    $default  reduce using rule 124 (match-arm)
+
+
+State 316
+
+  125 pat-or: pat BITOR pat-or .
+
+    $default  reduce using rule 125 (pat-or)
