@@ -16,8 +16,8 @@ void parse_done(GList* items) {
       crate = items;
 }
 
-void yyerror(char const* s) {
-      fprintf(stderr, "%s\n", s);
+void yyerror(char *s) {
+      printf("Line %d: %s\n", yylineno, s);
 }
 
 static struct env* build_env(GList* crate) {
@@ -349,6 +349,10 @@ static void annotate_exp(struct exp* exp, struct env* env) {
                         exp->type = type_copy(type_get_elem(exp->unary.exp->type));
                   }
 
+                  if (exp_is_arith(exp) && type_is_i32(exp->unary.exp->type)) {
+                        exp->type = type_i32();
+                  }
+
                   break;
             }
       }
@@ -367,7 +371,11 @@ static void annotate_stmt(struct stmt* stmt, struct env* env) {
                         } else {
                               // TODO (leak)
                               if (stmt->let.pat->bind.mut) {
-                                    env_insert(env, stmt->let.pat->bind.id, type_mut(stmt->let.exp->type));
+                                    if (type_is_mut(stmt->let.exp->type)) {
+                                          env_insert(env, stmt->let.pat->bind.id, stmt->let.exp->type);
+                                    } else {
+                                          env_insert(env, stmt->let.pat->bind.id, type_mut(stmt->let.exp->type));
+                                    }
                               } else env_insert(env, stmt->let.pat->bind.id, stmt->let.exp->type);
                               stmt->type = type_unit();
                         }
