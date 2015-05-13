@@ -1,0 +1,4855 @@
+Nonterminals useless in grammar
+
+   assign-ops
+
+
+Terminals unused in grammar
+
+   ABSTRACT
+   ALIGNOF
+   AS
+   BE
+   BREAK
+   CONST
+   CONTINUE
+   CRATE
+   DO
+   EXTERN
+   FINAL
+   FOR
+   IMPL
+   IN
+   MACRO
+   MACRO_RULES
+   MOD
+   MOVE
+   OFFSETOF
+   OVERRIDE
+   PRIV
+   PUB
+   PURE
+   SIZEOF
+   STATIC
+   SELF
+   SUPER
+   TRAIT
+   TYPE
+   TYPEOF
+   UNSAFE
+   UNSIZED
+   USE
+   VIRTUAL
+   WHERE
+   YIELD
+   POUND
+   BASH
+   DOLLAR
+   CARAT
+   DBLLEFT
+   DBLRIGHT
+   PLUSEQ
+   MINEQ
+   ASTEQ
+   SLASHEQ
+   PERCEQ
+   AMPEQ
+   BAREQ
+   CARATEQ
+   DBLLEFTEQ
+   DBLRIGHTEQ
+   ELIPSE
+   DBLPER
+   BOOL
+   U16
+   U32
+   U64
+   I8
+   I16
+   I64
+   F32
+   F64
+   USIZE
+   ISIZE
+   CHAR
+   STR
+   LITBOOL
+   UNKNOWN
+   ASSIGNMENT
+
+
+Rules useless in grammar
+
+  131 assign-ops: PLUSEQ
+  132           | MINEQ
+  133           | ASTEQ
+  134           | SLASHEQ
+  135           | PERCEQ
+  136           | EQUAL
+
+
+Rules useless in parser due to conflicts
+
+  102 type-list: type
+
+  103 enum-def: ENUM ID LBRACE enum-ctor-defs RBRACE
+
+  104 enum-ctor-defs: enum-ctor-def COMMA enum-ctor-defs
+  105               | enum-ctor-def
+
+  107 enum-ctor-def: ID
+
+  129 compound-lit: pat-struct
+
+
+State 19 conflicts: 2 reduce/reduce
+State 21 conflicts: 1 reduce/reduce
+State 40 conflicts: 9 reduce/reduce
+State 45 conflicts: 9 reduce/reduce
+State 48 conflicts: 1 shift/reduce
+State 51 conflicts: 9 reduce/reduce
+State 53 conflicts: 9 reduce/reduce
+State 54 conflicts: 24 reduce/reduce
+State 61 conflicts: 4 reduce/reduce
+State 80 conflicts: 24 reduce/reduce
+State 83 conflicts: 2 shift/reduce
+State 84 conflicts: 2 shift/reduce
+State 85 conflicts: 2 shift/reduce
+State 88 conflicts: 15 shift/reduce, 9 reduce/reduce
+State 122 conflicts: 1 reduce/reduce
+State 124 conflicts: 1 reduce/reduce
+State 130 conflicts: 4 reduce/reduce
+State 140 conflicts: 15 shift/reduce
+State 145 conflicts: 9 reduce/reduce
+State 146 conflicts: 2 shift/reduce
+State 159 conflicts: 2 shift/reduce
+State 160 conflicts: 2 shift/reduce
+State 161 conflicts: 2 shift/reduce
+State 162 conflicts: 2 shift/reduce
+State 163 conflicts: 2 shift/reduce
+State 164 conflicts: 2 shift/reduce
+State 165 conflicts: 2 shift/reduce
+State 166 conflicts: 2 shift/reduce
+State 167 conflicts: 2 shift/reduce
+State 168 conflicts: 2 shift/reduce
+State 169 conflicts: 2 shift/reduce
+State 170 conflicts: 2 shift/reduce
+State 171 conflicts: 2 shift/reduce
+
+
+Grammar
+
+    0 $accept: program "end of file"
+
+    1 program: crate
+
+    2 crate: items
+
+    3 items: item items
+    4      | item
+
+    5 item: fn-def
+    6     | enum-def
+    7     | struct-def
+
+    8 fn-def: FN ID LPAREN RPAREN block
+    9       | FN ID LPAREN RPAREN SNGLARROW return block
+   10       | FN ID LPAREN fn-params RPAREN block
+   11       | FN ID LPAREN fn-params RPAREN SNGLARROW return block
+
+   12 fn-params: fn-param COMMA fn-params
+   13          | fn-param
+
+   14 fn-param: pat-type
+
+   15 return: type
+   16       | EXCLAM
+
+   17 enum-def: ENUM ID LBRACE enum-ctor-defs RBRACE
+
+   18 enum-ctor-defs: enum-ctor-def COMMA enum-ctor-defs
+   19               | enum-ctor-def
+
+   20 enum-ctor-def: ID LPAREN enum-ctor-params RPAREN
+   21              | ID
+
+   22 enum-ctor-params: type COMMA enum-ctor-params
+   23                 | type
+
+   24 pat-type: pat COLON type
+
+   25 pat: primitive-lit
+   26    | name-binding
+   27    | pat-deref
+   28    | pat-array
+   29    | pat-enum
+   30    | pat-struct
+   31    | UNDERSCORE
+   32    | exp
+
+   33 primitive-lit: LITDEC
+   34              | LITCHAR
+   35              | LITSTR
+
+   36 name-binding: ID
+   37             | MUT ID
+   38             | REF ID
+   39             | REF MUT ID
+
+   40 exp: literal
+   41    | ID
+   42    | LPAREN exp RPAREN
+   43    | exp PLUS exp
+   44    | exp DASH exp
+   45    | exp ASTER exp
+   46    | exp SLASH exp
+   47    | exp PERCENT exp
+   48    | DASH exp
+   49    | exp DBLAMP exp
+   50    | exp DBLBAR exp
+   51    | EXCLAM exp
+   52    | exp LTHAN exp
+   53    | exp GTHAN exp
+   54    | exp LEQTHAN exp
+   55    | exp GEQTHAN exp
+   56    | exp DBLEQ exp
+   57    | exp NOTEQ exp
+   58    | AMP exp
+   59    | ASTER exp
+   60    | AMP MUT exp
+   61    | lookup
+   62    | exp LBRACK exp RBRACK
+   63    | WHILE LPAREN exp RPAREN block
+   64    | loop
+   65    | IF LPAREN exp RPAREN block ELSE block
+   66    | IF LPAREN exp RPAREN block
+   67    | MATCH LPAREN exp RPAREN LBRACE arm-list RBRACE
+   68    | function
+   69    | BOX DBLCOL NEW LPAREN exp RPAREN
+   70    | pat-struct
+
+   71 exps: exp COMMA exps
+   72     | exp
+
+   73 lookup: lookup PERIOD ID
+   74       | exp PERIOD ID
+
+   75 function: ID LPAREN exps RPAREN
+   76         | ID unit
+
+   77 arm-list: arm-list-item COMMA arm-list
+   78         | arm-list-item
+
+   79 arm-list-item: pat-list DBLARROW block
+
+   80 pat-list: pat BAR pat-list
+   81         | pat
+
+   82 pat-deref: AMP pat
+
+   83 pat-array: LBRACK pats RBRACK
+
+   84 loop: LOOP block
+
+   85 pat-enum: ID DBLCOL ID LPAREN pats RPAREN
+   86         | ID DBLCOL ID
+
+   87 pats: pat COMMA pats
+   88     | pat
+
+   89 pat-struct: ID LBRACE id-pat-list RBRACE
+
+   90 id-pat-list: id-pat COMMA id-pat-list
+   91            | id-pat
+
+   92 id-pat: ID COLON pat
+
+   93 type: U8
+   94     | I32
+   95     | AMP type
+   96     | AMP MUT type
+   97     | ID
+   98     | LBRACK type RBRACK
+   99     | LBRACK type SEMI LITDEC RBRACK
+  100     | BOX LTHAN type GTHAN
+
+  101 type-list: type COMMA type-list
+  102          | type
+
+  103 enum-def: ENUM ID LBRACE enum-ctor-defs RBRACE
+
+  104 enum-ctor-defs: enum-ctor-def COMMA enum-ctor-defs
+  105               | enum-ctor-def
+
+  106 enum-ctor-def: ID LPAREN type-list RPAREN
+  107              | ID
+
+  108 struct-def: STRUCT ID LBRACE type-annotations RBRACE
+
+  109 type-annotations: type-annotation COMMA type-annotations
+  110                 | type-annotation
+
+  111 type-annotation: ID COLON type
+
+  112 unit: LPAREN RPAREN
+
+  113 block: LBRACE stmts RBRACE
+
+  114 stmts: stmt stmts
+  115      | stmt
+  116      | exp
+
+  117 stmt: exp SEMI
+  118     | RETURN exp SEMI
+  119     | RETURN SEMI
+  120     | let-stmt SEMI
+  121     | loop
+
+  122 let-stmt: LET pat
+  123         | LET pat COLON type EQUAL exp
+  124         | LET pat EQUAL exp
+  125         | LET pat COLON type
+
+  126 literal: primitive-lit
+  127        | compound-lit
+
+  128 compound-lit: pat-enum
+  129             | pat-struct
+  130             | pat-array
+
+
+Terminals, with rules where they appear
+
+"end of file" (0) 0
+error (256)
+ABSTRACT (258)
+ALIGNOF (259)
+AS (260)
+BE (261)
+BOX (262) 69 100
+BREAK (263)
+CONST (264)
+CONTINUE (265)
+CRATE (266)
+DO (267)
+ELSE (268) 65
+ENUM (269) 17 103
+EXTERN (270)
+FINAL (271)
+FN (272) 8 9 10 11
+FOR (273)
+IF (274) 65 66
+IMPL (275)
+IN (276)
+LET (277) 122 123 124 125
+LOOP (278) 84
+MACRO (279)
+MACRO_RULES (280)
+MATCH (281) 67
+MOD (282)
+MOVE (283)
+MUT (284) 37 39 60 96
+OFFSETOF (285)
+OVERRIDE (286)
+PRIV (287)
+PUB (288)
+PURE (289)
+REF (290) 38 39
+RETURN (291) 118 119
+SIZEOF (292)
+STATIC (293)
+SELF (294)
+STRUCT (295) 108
+SUPER (296)
+TRAIT (297)
+TYPE (298)
+TYPEOF (299)
+UNSAFE (300)
+UNSIZED (301)
+USE (302)
+VIRTUAL (303)
+WHERE (304)
+WHILE (305) 63
+YIELD (306)
+DBLCOL (307) 69 85 86
+SNGLARROW (308) 9 11
+DBLARROW (309) 79
+POUND (310)
+BASH (311)
+DOLLAR (312)
+LBRACK (313) 62 83 98 99
+RBRACK (314) 62 83 98 99
+LPAREN (315) 8 9 10 11 20 42 63 65 66 67 69 75 85 106 112
+RPAREN (316) 8 9 10 11 20 42 63 65 66 67 69 75 85 106 112
+LBRACE (317) 17 67 89 103 108 113
+RBRACE (318) 17 67 89 103 108 113
+COMMA (319) 12 18 22 71 77 87 90 101 104 109
+SEMI (320) 99 117 118 119 120
+DASH (321) 44 48
+ASTER (322) 45 59
+EXCLAM (323) 16 51
+PLUS (324) 43
+SLASH (325) 46
+PERCENT (326) 47
+AMP (327) 58 60 82 95 96
+BAR (328) 80
+CARAT (329)
+DBLLEFT (330)
+DBLRIGHT (331)
+DBLBAR (332) 50
+DBLAMP (333) 49
+DBLEQ (334) 56
+NOTEQ (335) 57
+LTHAN (336) 52 100
+GTHAN (337) 53 100
+LEQTHAN (338) 54
+GEQTHAN (339) 55
+PLUSEQ (340)
+MINEQ (341)
+ASTEQ (342)
+SLASHEQ (343)
+PERCEQ (344)
+AMPEQ (345)
+BAREQ (346)
+CARATEQ (347)
+DBLLEFTEQ (348)
+DBLRIGHTEQ (349)
+ELIPSE (350)
+DBLPER (351)
+EQUAL (352) 123 124
+PERIOD (353) 73 74
+BOOL (354)
+U8 (355) 93
+U16 (356)
+U32 (357)
+U64 (358)
+I8 (359)
+I16 (360)
+I32 (361) 94
+I64 (362)
+F32 (363)
+F64 (364)
+USIZE (365)
+ISIZE (366)
+CHAR (367)
+STR (368)
+UNDERSCORE (369) 31
+COLON (370) 24 92 111 123 125
+NEW (371) 69
+LITDEC (372) 33 99
+LITBOOL (373)
+LITCHAR (374) 34
+LITSTR (375) 35
+ID (376) 8 9 10 11 17 20 21 36 37 38 39 41 73 74 75 76 85 86 89 92
+    97 103 106 107 108 111
+UNKNOWN (377)
+UMINUS (378)
+DEREFERENCE (379)
+MUTABLEADDR (380)
+ASSIGNMENT (381)
+
+
+Nonterminals, with rules where they appear
+
+$accept (127)
+    on left: 0
+program (128)
+    on left: 1, on right: 0
+crate (129)
+    on left: 2, on right: 1
+items (130)
+    on left: 3 4, on right: 2 3
+item (131)
+    on left: 5 6 7, on right: 3 4
+fn-def (132)
+    on left: 8 9 10 11, on right: 5
+fn-params (133)
+    on left: 12 13, on right: 10 11 12
+fn-param (134)
+    on left: 14, on right: 12 13
+return (135)
+    on left: 15 16, on right: 9 11
+enum-def (136)
+    on left: 17 103, on right: 6
+enum-ctor-defs (137)
+    on left: 18 19 104 105, on right: 17 18 103 104
+enum-ctor-def (138)
+    on left: 20 21 106 107, on right: 18 19 104 105
+enum-ctor-params (139)
+    on left: 22 23, on right: 20 22
+pat-type (140)
+    on left: 24, on right: 14
+pat (141)
+    on left: 25 26 27 28 29 30 31 32, on right: 24 80 81 82 87 88 92
+    122 123 124 125
+primitive-lit (142)
+    on left: 33 34 35, on right: 25 126
+name-binding (143)
+    on left: 36 37 38 39, on right: 26
+exp (144)
+    on left: 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57
+    58 59 60 61 62 63 64 65 66 67 68 69 70, on right: 32 42 43 44 45
+    46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 62 63 65 66 67 69
+    71 72 74 116 117 118 123 124
+exps (145)
+    on left: 71 72, on right: 71 75
+lookup (146)
+    on left: 73 74, on right: 61 73
+function (147)
+    on left: 75 76, on right: 68
+arm-list (148)
+    on left: 77 78, on right: 67 77
+arm-list-item (149)
+    on left: 79, on right: 77 78
+pat-list (150)
+    on left: 80 81, on right: 79 80
+pat-deref (151)
+    on left: 82, on right: 27
+pat-array (152)
+    on left: 83, on right: 28 130
+loop (153)
+    on left: 84, on right: 64 121
+pat-enum (154)
+    on left: 85 86, on right: 29 128
+pats (155)
+    on left: 87 88, on right: 83 85 87
+pat-struct (156)
+    on left: 89, on right: 30 70 129
+id-pat-list (157)
+    on left: 90 91, on right: 89 90
+id-pat (158)
+    on left: 92, on right: 90 91
+type (159)
+    on left: 93 94 95 96 97 98 99 100, on right: 15 22 23 24 95 96
+    98 99 100 101 102 111 123 125
+type-list (160)
+    on left: 101 102, on right: 101 106
+struct-def (161)
+    on left: 108, on right: 7
+type-annotations (162)
+    on left: 109 110, on right: 108 109
+type-annotation (163)
+    on left: 111, on right: 109 110
+unit (164)
+    on left: 112, on right: 76
+block (165)
+    on left: 113, on right: 8 9 10 11 63 65 66 79 84
+stmts (166)
+    on left: 114 115 116, on right: 113 114
+stmt (167)
+    on left: 117 118 119 120 121, on right: 114 115
+let-stmt (168)
+    on left: 122 123 124 125, on right: 120
+literal (169)
+    on left: 126 127, on right: 40
+compound-lit (170)
+    on left: 128 129 130, on right: 127
+
+
+State 0
+
+    0 $accept: . program "end of file"
+
+    ENUM    shift, and go to state 1
+    FN      shift, and go to state 2
+    STRUCT  shift, and go to state 3
+
+    program     go to state 4
+    crate       go to state 5
+    items       go to state 6
+    item        go to state 7
+    fn-def      go to state 8
+    enum-def    go to state 9
+    struct-def  go to state 10
+
+
+State 1
+
+   17 enum-def: ENUM . ID LBRACE enum-ctor-defs RBRACE
+  103         | ENUM . ID LBRACE enum-ctor-defs RBRACE
+
+    ID  shift, and go to state 11
+
+
+State 2
+
+    8 fn-def: FN . ID LPAREN RPAREN block
+    9       | FN . ID LPAREN RPAREN SNGLARROW return block
+   10       | FN . ID LPAREN fn-params RPAREN block
+   11       | FN . ID LPAREN fn-params RPAREN SNGLARROW return block
+
+    ID  shift, and go to state 12
+
+
+State 3
+
+  108 struct-def: STRUCT . ID LBRACE type-annotations RBRACE
+
+    ID  shift, and go to state 13
+
+
+State 4
+
+    0 $accept: program . "end of file"
+
+    "end of file"  shift, and go to state 14
+
+
+State 5
+
+    1 program: crate .
+
+    $default  reduce using rule 1 (program)
+
+
+State 6
+
+    2 crate: items .
+
+    $default  reduce using rule 2 (crate)
+
+
+State 7
+
+    3 items: item . items
+    4      | item .
+
+    ENUM    shift, and go to state 1
+    FN      shift, and go to state 2
+    STRUCT  shift, and go to state 3
+
+    $default  reduce using rule 4 (items)
+
+    items       go to state 15
+    item        go to state 7
+    fn-def      go to state 8
+    enum-def    go to state 9
+    struct-def  go to state 10
+
+
+State 8
+
+    5 item: fn-def .
+
+    $default  reduce using rule 5 (item)
+
+
+State 9
+
+    6 item: enum-def .
+
+    $default  reduce using rule 6 (item)
+
+
+State 10
+
+    7 item: struct-def .
+
+    $default  reduce using rule 7 (item)
+
+
+State 11
+
+   17 enum-def: ENUM ID . LBRACE enum-ctor-defs RBRACE
+  103         | ENUM ID . LBRACE enum-ctor-defs RBRACE
+
+    LBRACE  shift, and go to state 16
+
+
+State 12
+
+    8 fn-def: FN ID . LPAREN RPAREN block
+    9       | FN ID . LPAREN RPAREN SNGLARROW return block
+   10       | FN ID . LPAREN fn-params RPAREN block
+   11       | FN ID . LPAREN fn-params RPAREN SNGLARROW return block
+
+    LPAREN  shift, and go to state 17
+
+
+State 13
+
+  108 struct-def: STRUCT ID . LBRACE type-annotations RBRACE
+
+    LBRACE  shift, and go to state 18
+
+
+State 14
+
+    0 $accept: program "end of file" .
+
+    $default  accept
+
+
+State 15
+
+    3 items: item items .
+
+    $default  reduce using rule 3 (items)
+
+
+State 16
+
+   17 enum-def: ENUM ID LBRACE . enum-ctor-defs RBRACE
+  103         | ENUM ID LBRACE . enum-ctor-defs RBRACE
+
+    ID  shift, and go to state 19
+
+    enum-ctor-defs  go to state 20
+    enum-ctor-def   go to state 21
+
+
+State 17
+
+    8 fn-def: FN ID LPAREN . RPAREN block
+    9       | FN ID LPAREN . RPAREN SNGLARROW return block
+   10       | FN ID LPAREN . fn-params RPAREN block
+   11       | FN ID LPAREN . fn-params RPAREN SNGLARROW return block
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 26
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    RPAREN      shift, and go to state 31
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    fn-params      go to state 41
+    fn-param       go to state 42
+    pat-type       go to state 43
+    pat            go to state 44
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 47
+    lookup         go to state 48
+    function       go to state 49
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 18
+
+  108 struct-def: STRUCT ID LBRACE . type-annotations RBRACE
+
+    ID  shift, and go to state 57
+
+    type-annotations  go to state 58
+    type-annotation   go to state 59
+
+
+State 19
+
+   20 enum-ctor-def: ID . LPAREN enum-ctor-params RPAREN
+   21              | ID .
+  106              | ID . LPAREN type-list RPAREN
+  107              | ID .
+
+    LPAREN  shift, and go to state 60
+
+    RBRACE    reduce using rule 21 (enum-ctor-def)
+    RBRACE    [reduce using rule 107 (enum-ctor-def)]
+    COMMA     reduce using rule 21 (enum-ctor-def)
+    COMMA     [reduce using rule 107 (enum-ctor-def)]
+    $default  reduce using rule 21 (enum-ctor-def)
+
+
+State 20
+
+   17 enum-def: ENUM ID LBRACE enum-ctor-defs . RBRACE
+  103         | ENUM ID LBRACE enum-ctor-defs . RBRACE
+
+    RBRACE  shift, and go to state 61
+
+
+State 21
+
+   18 enum-ctor-defs: enum-ctor-def . COMMA enum-ctor-defs
+   19               | enum-ctor-def .
+  104               | enum-ctor-def . COMMA enum-ctor-defs
+  105               | enum-ctor-def .
+
+    COMMA  shift, and go to state 62
+
+    RBRACE    reduce using rule 19 (enum-ctor-defs)
+    RBRACE    [reduce using rule 105 (enum-ctor-defs)]
+    $default  reduce using rule 19 (enum-ctor-defs)
+
+
+State 22
+
+   69 exp: BOX . DBLCOL NEW LPAREN exp RPAREN
+
+    DBLCOL  shift, and go to state 63
+
+
+State 23
+
+   65 exp: IF . LPAREN exp RPAREN block ELSE block
+   66    | IF . LPAREN exp RPAREN block
+
+    LPAREN  shift, and go to state 64
+
+
+State 24
+
+   84 loop: LOOP . block
+
+    LBRACE  shift, and go to state 65
+
+    block  go to state 66
+
+
+State 25
+
+   67 exp: MATCH . LPAREN exp RPAREN LBRACE arm-list RBRACE
+
+    LPAREN  shift, and go to state 67
+
+
+State 26
+
+   37 name-binding: MUT . ID
+
+    ID  shift, and go to state 68
+
+
+State 27
+
+   38 name-binding: REF . ID
+   39             | REF . MUT ID
+
+    MUT  shift, and go to state 69
+    ID   shift, and go to state 70
+
+
+State 28
+
+   63 exp: WHILE . LPAREN exp RPAREN block
+
+    LPAREN  shift, and go to state 71
+
+
+State 29
+
+   83 pat-array: LBRACK . pats RBRACK
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 26
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    pat            go to state 72
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 47
+    lookup         go to state 48
+    function       go to state 49
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pats           go to state 73
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 30
+
+   42 exp: LPAREN . exp RPAREN
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 77
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 31
+
+    8 fn-def: FN ID LPAREN RPAREN . block
+    9       | FN ID LPAREN RPAREN . SNGLARROW return block
+
+    SNGLARROW  shift, and go to state 81
+    LBRACE     shift, and go to state 65
+
+    block  go to state 82
+
+
+State 32
+
+   48 exp: DASH . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 83
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 33
+
+   59 exp: ASTER . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 84
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 34
+
+   51 exp: EXCLAM . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 85
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 35
+
+   58 exp: AMP . exp
+   60    | AMP . MUT exp
+   82 pat-deref: AMP . pat
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 86
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    pat            go to state 87
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 88
+    lookup         go to state 48
+    function       go to state 49
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 36
+
+   31 pat: UNDERSCORE .
+
+    $default  reduce using rule 31 (pat)
+
+
+State 37
+
+   33 primitive-lit: LITDEC .
+
+    $default  reduce using rule 33 (primitive-lit)
+
+
+State 38
+
+   34 primitive-lit: LITCHAR .
+
+    $default  reduce using rule 34 (primitive-lit)
+
+
+State 39
+
+   35 primitive-lit: LITSTR .
+
+    $default  reduce using rule 35 (primitive-lit)
+
+
+State 40
+
+   36 name-binding: ID .
+   41 exp: ID .
+   75 function: ID . LPAREN exps RPAREN
+   76         | ID . unit
+   85 pat-enum: ID . DBLCOL ID LPAREN pats RPAREN
+   86         | ID . DBLCOL ID
+   89 pat-struct: ID . LBRACE id-pat-list RBRACE
+
+    DBLCOL  shift, and go to state 89
+    LPAREN  shift, and go to state 90
+    LBRACE  shift, and go to state 91
+
+    DBLARROW  reduce using rule 36 (name-binding)
+    DBLARROW  [reduce using rule 41 (exp)]
+    RBRACK    reduce using rule 36 (name-binding)
+    RBRACK    [reduce using rule 41 (exp)]
+    RPAREN    reduce using rule 36 (name-binding)
+    RPAREN    [reduce using rule 41 (exp)]
+    RBRACE    reduce using rule 36 (name-binding)
+    RBRACE    [reduce using rule 41 (exp)]
+    COMMA     reduce using rule 36 (name-binding)
+    COMMA     [reduce using rule 41 (exp)]
+    SEMI      reduce using rule 36 (name-binding)
+    SEMI      [reduce using rule 41 (exp)]
+    BAR       reduce using rule 36 (name-binding)
+    BAR       [reduce using rule 41 (exp)]
+    EQUAL     reduce using rule 36 (name-binding)
+    EQUAL     [reduce using rule 41 (exp)]
+    COLON     reduce using rule 36 (name-binding)
+    COLON     [reduce using rule 41 (exp)]
+    $default  reduce using rule 41 (exp)
+
+    unit  go to state 92
+
+
+State 41
+
+   10 fn-def: FN ID LPAREN fn-params . RPAREN block
+   11       | FN ID LPAREN fn-params . RPAREN SNGLARROW return block
+
+    RPAREN  shift, and go to state 93
+
+
+State 42
+
+   12 fn-params: fn-param . COMMA fn-params
+   13          | fn-param .
+
+    COMMA  shift, and go to state 94
+
+    $default  reduce using rule 13 (fn-params)
+
+
+State 43
+
+   14 fn-param: pat-type .
+
+    $default  reduce using rule 14 (fn-param)
+
+
+State 44
+
+   24 pat-type: pat . COLON type
+
+    COLON  shift, and go to state 95
+
+
+State 45
+
+   25 pat: primitive-lit .
+  126 literal: primitive-lit .
+
+    DBLARROW  reduce using rule 25 (pat)
+    DBLARROW  [reduce using rule 126 (literal)]
+    RBRACK    reduce using rule 25 (pat)
+    RBRACK    [reduce using rule 126 (literal)]
+    RPAREN    reduce using rule 25 (pat)
+    RPAREN    [reduce using rule 126 (literal)]
+    RBRACE    reduce using rule 25 (pat)
+    RBRACE    [reduce using rule 126 (literal)]
+    COMMA     reduce using rule 25 (pat)
+    COMMA     [reduce using rule 126 (literal)]
+    SEMI      reduce using rule 25 (pat)
+    SEMI      [reduce using rule 126 (literal)]
+    BAR       reduce using rule 25 (pat)
+    BAR       [reduce using rule 126 (literal)]
+    EQUAL     reduce using rule 25 (pat)
+    EQUAL     [reduce using rule 126 (literal)]
+    COLON     reduce using rule 25 (pat)
+    COLON     [reduce using rule 126 (literal)]
+    $default  reduce using rule 126 (literal)
+
+
+State 46
+
+   26 pat: name-binding .
+
+    $default  reduce using rule 26 (pat)
+
+
+State 47
+
+   32 pat: exp .
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    $default  reduce using rule 32 (pat)
+
+
+State 48
+
+   61 exp: lookup .
+   73 lookup: lookup . PERIOD ID
+
+    PERIOD  shift, and go to state 111
+
+    PERIOD    [reduce using rule 61 (exp)]
+    $default  reduce using rule 61 (exp)
+
+
+State 49
+
+   68 exp: function .
+
+    $default  reduce using rule 68 (exp)
+
+
+State 50
+
+   27 pat: pat-deref .
+
+    $default  reduce using rule 27 (pat)
+
+
+State 51
+
+   28 pat: pat-array .
+  130 compound-lit: pat-array .
+
+    DBLARROW  reduce using rule 28 (pat)
+    DBLARROW  [reduce using rule 130 (compound-lit)]
+    RBRACK    reduce using rule 28 (pat)
+    RBRACK    [reduce using rule 130 (compound-lit)]
+    RPAREN    reduce using rule 28 (pat)
+    RPAREN    [reduce using rule 130 (compound-lit)]
+    RBRACE    reduce using rule 28 (pat)
+    RBRACE    [reduce using rule 130 (compound-lit)]
+    COMMA     reduce using rule 28 (pat)
+    COMMA     [reduce using rule 130 (compound-lit)]
+    SEMI      reduce using rule 28 (pat)
+    SEMI      [reduce using rule 130 (compound-lit)]
+    BAR       reduce using rule 28 (pat)
+    BAR       [reduce using rule 130 (compound-lit)]
+    EQUAL     reduce using rule 28 (pat)
+    EQUAL     [reduce using rule 130 (compound-lit)]
+    COLON     reduce using rule 28 (pat)
+    COLON     [reduce using rule 130 (compound-lit)]
+    $default  reduce using rule 130 (compound-lit)
+
+
+State 52
+
+   64 exp: loop .
+
+    $default  reduce using rule 64 (exp)
+
+
+State 53
+
+   29 pat: pat-enum .
+  128 compound-lit: pat-enum .
+
+    DBLARROW  reduce using rule 29 (pat)
+    DBLARROW  [reduce using rule 128 (compound-lit)]
+    RBRACK    reduce using rule 29 (pat)
+    RBRACK    [reduce using rule 128 (compound-lit)]
+    RPAREN    reduce using rule 29 (pat)
+    RPAREN    [reduce using rule 128 (compound-lit)]
+    RBRACE    reduce using rule 29 (pat)
+    RBRACE    [reduce using rule 128 (compound-lit)]
+    COMMA     reduce using rule 29 (pat)
+    COMMA     [reduce using rule 128 (compound-lit)]
+    SEMI      reduce using rule 29 (pat)
+    SEMI      [reduce using rule 128 (compound-lit)]
+    BAR       reduce using rule 29 (pat)
+    BAR       [reduce using rule 128 (compound-lit)]
+    EQUAL     reduce using rule 29 (pat)
+    EQUAL     [reduce using rule 128 (compound-lit)]
+    COLON     reduce using rule 29 (pat)
+    COLON     [reduce using rule 128 (compound-lit)]
+    $default  reduce using rule 128 (compound-lit)
+
+
+State 54
+
+   30 pat: pat-struct .
+   70 exp: pat-struct .
+  129 compound-lit: pat-struct .
+
+    DBLARROW  reduce using rule 30 (pat)
+    DBLARROW  [reduce using rule 70 (exp)]
+    DBLARROW  [reduce using rule 129 (compound-lit)]
+    LBRACK    reduce using rule 70 (exp)
+    LBRACK    [reduce using rule 129 (compound-lit)]
+    RBRACK    reduce using rule 30 (pat)
+    RBRACK    [reduce using rule 70 (exp)]
+    RBRACK    [reduce using rule 129 (compound-lit)]
+    RPAREN    reduce using rule 30 (pat)
+    RPAREN    [reduce using rule 70 (exp)]
+    RPAREN    [reduce using rule 129 (compound-lit)]
+    RBRACE    reduce using rule 30 (pat)
+    RBRACE    [reduce using rule 70 (exp)]
+    RBRACE    [reduce using rule 129 (compound-lit)]
+    COMMA     reduce using rule 30 (pat)
+    COMMA     [reduce using rule 70 (exp)]
+    COMMA     [reduce using rule 129 (compound-lit)]
+    SEMI      reduce using rule 30 (pat)
+    SEMI      [reduce using rule 70 (exp)]
+    SEMI      [reduce using rule 129 (compound-lit)]
+    DASH      reduce using rule 70 (exp)
+    DASH      [reduce using rule 129 (compound-lit)]
+    ASTER     reduce using rule 70 (exp)
+    ASTER     [reduce using rule 129 (compound-lit)]
+    PLUS      reduce using rule 70 (exp)
+    PLUS      [reduce using rule 129 (compound-lit)]
+    SLASH     reduce using rule 70 (exp)
+    SLASH     [reduce using rule 129 (compound-lit)]
+    PERCENT   reduce using rule 70 (exp)
+    PERCENT   [reduce using rule 129 (compound-lit)]
+    BAR       reduce using rule 30 (pat)
+    BAR       [reduce using rule 70 (exp)]
+    BAR       [reduce using rule 129 (compound-lit)]
+    DBLBAR    reduce using rule 70 (exp)
+    DBLBAR    [reduce using rule 129 (compound-lit)]
+    DBLAMP    reduce using rule 70 (exp)
+    DBLAMP    [reduce using rule 129 (compound-lit)]
+    DBLEQ     reduce using rule 70 (exp)
+    DBLEQ     [reduce using rule 129 (compound-lit)]
+    NOTEQ     reduce using rule 70 (exp)
+    NOTEQ     [reduce using rule 129 (compound-lit)]
+    LTHAN     reduce using rule 70 (exp)
+    LTHAN     [reduce using rule 129 (compound-lit)]
+    GTHAN     reduce using rule 70 (exp)
+    GTHAN     [reduce using rule 129 (compound-lit)]
+    LEQTHAN   reduce using rule 70 (exp)
+    LEQTHAN   [reduce using rule 129 (compound-lit)]
+    GEQTHAN   reduce using rule 70 (exp)
+    GEQTHAN   [reduce using rule 129 (compound-lit)]
+    EQUAL     reduce using rule 30 (pat)
+    EQUAL     [reduce using rule 70 (exp)]
+    EQUAL     [reduce using rule 129 (compound-lit)]
+    PERIOD    reduce using rule 70 (exp)
+    PERIOD    [reduce using rule 129 (compound-lit)]
+    COLON     reduce using rule 30 (pat)
+    COLON     [reduce using rule 70 (exp)]
+    COLON     [reduce using rule 129 (compound-lit)]
+    $default  reduce using rule 70 (exp)
+
+
+State 55
+
+   40 exp: literal .
+
+    $default  reduce using rule 40 (exp)
+
+
+State 56
+
+  127 literal: compound-lit .
+
+    $default  reduce using rule 127 (literal)
+
+
+State 57
+
+  111 type-annotation: ID . COLON type
+
+    COLON  shift, and go to state 112
+
+
+State 58
+
+  108 struct-def: STRUCT ID LBRACE type-annotations . RBRACE
+
+    RBRACE  shift, and go to state 113
+
+
+State 59
+
+  109 type-annotations: type-annotation . COMMA type-annotations
+  110                 | type-annotation .
+
+    COMMA  shift, and go to state 114
+
+    $default  reduce using rule 110 (type-annotations)
+
+
+State 60
+
+   20 enum-ctor-def: ID LPAREN . enum-ctor-params RPAREN
+  106              | ID LPAREN . type-list RPAREN
+
+    BOX     shift, and go to state 115
+    LBRACK  shift, and go to state 116
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    enum-ctor-params  go to state 121
+    type              go to state 122
+    type-list         go to state 123
+
+
+State 61
+
+   17 enum-def: ENUM ID LBRACE enum-ctor-defs RBRACE .
+  103         | ENUM ID LBRACE enum-ctor-defs RBRACE .
+
+    "end of file"  reduce using rule 17 (enum-def)
+    "end of file"  [reduce using rule 103 (enum-def)]
+    ENUM           reduce using rule 17 (enum-def)
+    ENUM           [reduce using rule 103 (enum-def)]
+    FN             reduce using rule 17 (enum-def)
+    FN             [reduce using rule 103 (enum-def)]
+    STRUCT         reduce using rule 17 (enum-def)
+    STRUCT         [reduce using rule 103 (enum-def)]
+    $default       reduce using rule 17 (enum-def)
+
+
+State 62
+
+   18 enum-ctor-defs: enum-ctor-def COMMA . enum-ctor-defs
+  104               | enum-ctor-def COMMA . enum-ctor-defs
+
+    ID  shift, and go to state 19
+
+    enum-ctor-defs  go to state 124
+    enum-ctor-def   go to state 21
+
+
+State 63
+
+   69 exp: BOX DBLCOL . NEW LPAREN exp RPAREN
+
+    NEW  shift, and go to state 125
+
+
+State 64
+
+   65 exp: IF LPAREN . exp RPAREN block ELSE block
+   66    | IF LPAREN . exp RPAREN block
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 126
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 65
+
+  113 block: LBRACE . stmts RBRACE
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LET      shift, and go to state 127
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    RETURN   shift, and go to state 128
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 129
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 130
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    stmts          go to state 131
+    stmt           go to state 132
+    let-stmt       go to state 133
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 66
+
+   84 loop: LOOP block .
+
+    $default  reduce using rule 84 (loop)
+
+
+State 67
+
+   67 exp: MATCH LPAREN . exp RPAREN LBRACE arm-list RBRACE
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 134
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 68
+
+   37 name-binding: MUT ID .
+
+    $default  reduce using rule 37 (name-binding)
+
+
+State 69
+
+   39 name-binding: REF MUT . ID
+
+    ID  shift, and go to state 135
+
+
+State 70
+
+   38 name-binding: REF ID .
+
+    $default  reduce using rule 38 (name-binding)
+
+
+State 71
+
+   63 exp: WHILE LPAREN . exp RPAREN block
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 136
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 72
+
+   87 pats: pat . COMMA pats
+   88     | pat .
+
+    COMMA  shift, and go to state 137
+
+    $default  reduce using rule 88 (pats)
+
+
+State 73
+
+   83 pat-array: LBRACK pats . RBRACK
+
+    RBRACK  shift, and go to state 138
+
+
+State 74
+
+   58 exp: AMP . exp
+   60    | AMP . MUT exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    MUT      shift, and go to state 139
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 140
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 75
+
+   41 exp: ID .
+   75 function: ID . LPAREN exps RPAREN
+   76         | ID . unit
+   85 pat-enum: ID . DBLCOL ID LPAREN pats RPAREN
+   86         | ID . DBLCOL ID
+   89 pat-struct: ID . LBRACE id-pat-list RBRACE
+
+    DBLCOL  shift, and go to state 89
+    LPAREN  shift, and go to state 90
+    LBRACE  shift, and go to state 91
+
+    $default  reduce using rule 41 (exp)
+
+    unit  go to state 92
+
+
+State 76
+
+  126 literal: primitive-lit .
+
+    $default  reduce using rule 126 (literal)
+
+
+State 77
+
+   42 exp: LPAREN exp . RPAREN
+   43    | exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    RPAREN   shift, and go to state 141
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+
+State 78
+
+  130 compound-lit: pat-array .
+
+    $default  reduce using rule 130 (compound-lit)
+
+
+State 79
+
+  128 compound-lit: pat-enum .
+
+    $default  reduce using rule 128 (compound-lit)
+
+
+State 80
+
+   70 exp: pat-struct .
+  129 compound-lit: pat-struct .
+
+    DBLARROW  reduce using rule 70 (exp)
+    DBLARROW  [reduce using rule 129 (compound-lit)]
+    LBRACK    reduce using rule 70 (exp)
+    LBRACK    [reduce using rule 129 (compound-lit)]
+    RBRACK    reduce using rule 70 (exp)
+    RBRACK    [reduce using rule 129 (compound-lit)]
+    RPAREN    reduce using rule 70 (exp)
+    RPAREN    [reduce using rule 129 (compound-lit)]
+    RBRACE    reduce using rule 70 (exp)
+    RBRACE    [reduce using rule 129 (compound-lit)]
+    COMMA     reduce using rule 70 (exp)
+    COMMA     [reduce using rule 129 (compound-lit)]
+    SEMI      reduce using rule 70 (exp)
+    SEMI      [reduce using rule 129 (compound-lit)]
+    DASH      reduce using rule 70 (exp)
+    DASH      [reduce using rule 129 (compound-lit)]
+    ASTER     reduce using rule 70 (exp)
+    ASTER     [reduce using rule 129 (compound-lit)]
+    PLUS      reduce using rule 70 (exp)
+    PLUS      [reduce using rule 129 (compound-lit)]
+    SLASH     reduce using rule 70 (exp)
+    SLASH     [reduce using rule 129 (compound-lit)]
+    PERCENT   reduce using rule 70 (exp)
+    PERCENT   [reduce using rule 129 (compound-lit)]
+    BAR       reduce using rule 70 (exp)
+    BAR       [reduce using rule 129 (compound-lit)]
+    DBLBAR    reduce using rule 70 (exp)
+    DBLBAR    [reduce using rule 129 (compound-lit)]
+    DBLAMP    reduce using rule 70 (exp)
+    DBLAMP    [reduce using rule 129 (compound-lit)]
+    DBLEQ     reduce using rule 70 (exp)
+    DBLEQ     [reduce using rule 129 (compound-lit)]
+    NOTEQ     reduce using rule 70 (exp)
+    NOTEQ     [reduce using rule 129 (compound-lit)]
+    LTHAN     reduce using rule 70 (exp)
+    LTHAN     [reduce using rule 129 (compound-lit)]
+    GTHAN     reduce using rule 70 (exp)
+    GTHAN     [reduce using rule 129 (compound-lit)]
+    LEQTHAN   reduce using rule 70 (exp)
+    LEQTHAN   [reduce using rule 129 (compound-lit)]
+    GEQTHAN   reduce using rule 70 (exp)
+    GEQTHAN   [reduce using rule 129 (compound-lit)]
+    EQUAL     reduce using rule 70 (exp)
+    EQUAL     [reduce using rule 129 (compound-lit)]
+    PERIOD    reduce using rule 70 (exp)
+    PERIOD    [reduce using rule 129 (compound-lit)]
+    COLON     reduce using rule 70 (exp)
+    COLON     [reduce using rule 129 (compound-lit)]
+    $default  reduce using rule 70 (exp)
+
+
+State 81
+
+    9 fn-def: FN ID LPAREN RPAREN SNGLARROW . return block
+
+    BOX     shift, and go to state 115
+    LBRACK  shift, and go to state 116
+    EXCLAM  shift, and go to state 142
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    return  go to state 143
+    type    go to state 144
+
+
+State 82
+
+    8 fn-def: FN ID LPAREN RPAREN block .
+
+    $default  reduce using rule 8 (fn-def)
+
+
+State 83
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   48    | DASH exp .
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 48 (exp)]
+    PERIOD    [reduce using rule 48 (exp)]
+    $default  reduce using rule 48 (exp)
+
+
+State 84
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   59    | ASTER exp .
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 59 (exp)]
+    PERIOD    [reduce using rule 59 (exp)]
+    $default  reduce using rule 59 (exp)
+
+
+State 85
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   51    | EXCLAM exp .
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 51 (exp)]
+    PERIOD    [reduce using rule 51 (exp)]
+    $default  reduce using rule 51 (exp)
+
+
+State 86
+
+   37 name-binding: MUT . ID
+   60 exp: AMP MUT . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 145
+
+    primitive-lit  go to state 76
+    exp            go to state 146
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 87
+
+   82 pat-deref: AMP pat .
+
+    $default  reduce using rule 82 (pat-deref)
+
+
+State 88
+
+   32 pat: exp .
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   58    | AMP exp .
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    DBLARROW  reduce using rule 32 (pat)
+    DBLARROW  [reduce using rule 58 (exp)]
+    LBRACK    [reduce using rule 58 (exp)]
+    RBRACK    reduce using rule 32 (pat)
+    RBRACK    [reduce using rule 58 (exp)]
+    RPAREN    reduce using rule 32 (pat)
+    RPAREN    [reduce using rule 58 (exp)]
+    RBRACE    reduce using rule 32 (pat)
+    RBRACE    [reduce using rule 58 (exp)]
+    COMMA     reduce using rule 32 (pat)
+    COMMA     [reduce using rule 58 (exp)]
+    SEMI      reduce using rule 32 (pat)
+    SEMI      [reduce using rule 58 (exp)]
+    DASH      [reduce using rule 58 (exp)]
+    ASTER     [reduce using rule 58 (exp)]
+    PLUS      [reduce using rule 58 (exp)]
+    SLASH     [reduce using rule 58 (exp)]
+    PERCENT   [reduce using rule 58 (exp)]
+    BAR       reduce using rule 32 (pat)
+    BAR       [reduce using rule 58 (exp)]
+    DBLBAR    [reduce using rule 58 (exp)]
+    DBLAMP    [reduce using rule 58 (exp)]
+    DBLEQ     [reduce using rule 58 (exp)]
+    NOTEQ     [reduce using rule 58 (exp)]
+    LTHAN     [reduce using rule 58 (exp)]
+    GTHAN     [reduce using rule 58 (exp)]
+    LEQTHAN   [reduce using rule 58 (exp)]
+    GEQTHAN   [reduce using rule 58 (exp)]
+    EQUAL     reduce using rule 32 (pat)
+    EQUAL     [reduce using rule 58 (exp)]
+    PERIOD    [reduce using rule 58 (exp)]
+    COLON     reduce using rule 32 (pat)
+    COLON     [reduce using rule 58 (exp)]
+    $default  reduce using rule 32 (pat)
+
+
+State 89
+
+   85 pat-enum: ID DBLCOL . ID LPAREN pats RPAREN
+   86         | ID DBLCOL . ID
+
+    ID  shift, and go to state 147
+
+
+State 90
+
+   75 function: ID LPAREN . exps RPAREN
+  112 unit: LPAREN . RPAREN
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    RPAREN   shift, and go to state 148
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 149
+    exps           go to state 150
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 91
+
+   89 pat-struct: ID LBRACE . id-pat-list RBRACE
+
+    ID  shift, and go to state 151
+
+    id-pat-list  go to state 152
+    id-pat       go to state 153
+
+
+State 92
+
+   76 function: ID unit .
+
+    $default  reduce using rule 76 (function)
+
+
+State 93
+
+   10 fn-def: FN ID LPAREN fn-params RPAREN . block
+   11       | FN ID LPAREN fn-params RPAREN . SNGLARROW return block
+
+    SNGLARROW  shift, and go to state 154
+    LBRACE     shift, and go to state 65
+
+    block  go to state 155
+
+
+State 94
+
+   12 fn-params: fn-param COMMA . fn-params
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 26
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    fn-params      go to state 156
+    fn-param       go to state 42
+    pat-type       go to state 43
+    pat            go to state 44
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 47
+    lookup         go to state 48
+    function       go to state 49
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 95
+
+   24 pat-type: pat COLON . type
+
+    BOX     shift, and go to state 115
+    LBRACK  shift, and go to state 116
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    type  go to state 157
+
+
+State 96
+
+   62 exp: exp LBRACK . exp RBRACK
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 158
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 97
+
+   44 exp: exp DASH . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 159
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 98
+
+   45 exp: exp ASTER . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 160
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 99
+
+   43 exp: exp PLUS . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 161
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 100
+
+   46 exp: exp SLASH . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 162
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 101
+
+   47 exp: exp PERCENT . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 163
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 102
+
+   50 exp: exp DBLBAR . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 164
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 103
+
+   49 exp: exp DBLAMP . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 165
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 104
+
+   56 exp: exp DBLEQ . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 166
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 105
+
+   57 exp: exp NOTEQ . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 167
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 106
+
+   52 exp: exp LTHAN . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 168
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 107
+
+   53 exp: exp GTHAN . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 169
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 108
+
+   54 exp: exp LEQTHAN . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 170
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 109
+
+   55 exp: exp GEQTHAN . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 171
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 110
+
+   74 lookup: exp PERIOD . ID
+
+    ID  shift, and go to state 172
+
+
+State 111
+
+   73 lookup: lookup PERIOD . ID
+
+    ID  shift, and go to state 173
+
+
+State 112
+
+  111 type-annotation: ID COLON . type
+
+    BOX     shift, and go to state 115
+    LBRACK  shift, and go to state 116
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    type  go to state 174
+
+
+State 113
+
+  108 struct-def: STRUCT ID LBRACE type-annotations RBRACE .
+
+    $default  reduce using rule 108 (struct-def)
+
+
+State 114
+
+  109 type-annotations: type-annotation COMMA . type-annotations
+
+    ID  shift, and go to state 57
+
+    type-annotations  go to state 175
+    type-annotation   go to state 59
+
+
+State 115
+
+  100 type: BOX . LTHAN type GTHAN
+
+    LTHAN  shift, and go to state 176
+
+
+State 116
+
+   98 type: LBRACK . type RBRACK
+   99     | LBRACK . type SEMI LITDEC RBRACK
+
+    BOX     shift, and go to state 115
+    LBRACK  shift, and go to state 116
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    type  go to state 177
+
+
+State 117
+
+   95 type: AMP . type
+   96     | AMP . MUT type
+
+    BOX     shift, and go to state 115
+    MUT     shift, and go to state 178
+    LBRACK  shift, and go to state 116
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    type  go to state 179
+
+
+State 118
+
+   93 type: U8 .
+
+    $default  reduce using rule 93 (type)
+
+
+State 119
+
+   94 type: I32 .
+
+    $default  reduce using rule 94 (type)
+
+
+State 120
+
+   97 type: ID .
+
+    $default  reduce using rule 97 (type)
+
+
+State 121
+
+   20 enum-ctor-def: ID LPAREN enum-ctor-params . RPAREN
+
+    RPAREN  shift, and go to state 180
+
+
+State 122
+
+   22 enum-ctor-params: type . COMMA enum-ctor-params
+   23                 | type .
+  101 type-list: type . COMMA type-list
+  102          | type .
+
+    COMMA  shift, and go to state 181
+
+    RPAREN    reduce using rule 23 (enum-ctor-params)
+    RPAREN    [reduce using rule 102 (type-list)]
+    $default  reduce using rule 23 (enum-ctor-params)
+
+
+State 123
+
+  106 enum-ctor-def: ID LPAREN type-list . RPAREN
+
+    RPAREN  shift, and go to state 182
+
+
+State 124
+
+   18 enum-ctor-defs: enum-ctor-def COMMA enum-ctor-defs .
+  104               | enum-ctor-def COMMA enum-ctor-defs .
+
+    RBRACE    reduce using rule 18 (enum-ctor-defs)
+    RBRACE    [reduce using rule 104 (enum-ctor-defs)]
+    $default  reduce using rule 18 (enum-ctor-defs)
+
+
+State 125
+
+   69 exp: BOX DBLCOL NEW . LPAREN exp RPAREN
+
+    LPAREN  shift, and go to state 183
+
+
+State 126
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   65    | IF LPAREN exp . RPAREN block ELSE block
+   66    | IF LPAREN exp . RPAREN block
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    RPAREN   shift, and go to state 184
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+
+State 127
+
+  122 let-stmt: LET . pat
+  123         | LET . pat COLON type EQUAL exp
+  124         | LET . pat EQUAL exp
+  125         | LET . pat COLON type
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 26
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    pat            go to state 185
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 47
+    lookup         go to state 48
+    function       go to state 49
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 128
+
+  118 stmt: RETURN . exp SEMI
+  119     | RETURN . SEMI
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    SEMI     shift, and go to state 186
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 187
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 129
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+  116 stmts: exp .
+  117 stmt: exp . SEMI
+
+    LBRACK   shift, and go to state 96
+    SEMI     shift, and go to state 188
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    $default  reduce using rule 116 (stmts)
+
+
+State 130
+
+   64 exp: loop .
+  121 stmt: loop .
+
+    BOX       reduce using rule 121 (stmt)
+    IF        reduce using rule 121 (stmt)
+    LET       reduce using rule 121 (stmt)
+    LOOP      reduce using rule 121 (stmt)
+    MATCH     reduce using rule 121 (stmt)
+    RETURN    reduce using rule 121 (stmt)
+    WHILE     reduce using rule 121 (stmt)
+    LBRACK    reduce using rule 64 (exp)
+    LBRACK    [reduce using rule 121 (stmt)]
+    LPAREN    reduce using rule 121 (stmt)
+    RBRACE    reduce using rule 64 (exp)
+    RBRACE    [reduce using rule 121 (stmt)]
+    DASH      reduce using rule 64 (exp)
+    DASH      [reduce using rule 121 (stmt)]
+    ASTER     reduce using rule 64 (exp)
+    ASTER     [reduce using rule 121 (stmt)]
+    EXCLAM    reduce using rule 121 (stmt)
+    AMP       reduce using rule 121 (stmt)
+    LITDEC    reduce using rule 121 (stmt)
+    LITCHAR   reduce using rule 121 (stmt)
+    LITSTR    reduce using rule 121 (stmt)
+    ID        reduce using rule 121 (stmt)
+    $default  reduce using rule 64 (exp)
+
+
+State 131
+
+  113 block: LBRACE stmts . RBRACE
+
+    RBRACE  shift, and go to state 189
+
+
+State 132
+
+  114 stmts: stmt . stmts
+  115      | stmt .
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LET      shift, and go to state 127
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    RETURN   shift, and go to state 128
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    $default  reduce using rule 115 (stmts)
+
+    primitive-lit  go to state 76
+    exp            go to state 129
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 130
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    stmts          go to state 190
+    stmt           go to state 132
+    let-stmt       go to state 133
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 133
+
+  120 stmt: let-stmt . SEMI
+
+    SEMI  shift, and go to state 191
+
+
+State 134
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   67    | MATCH LPAREN exp . RPAREN LBRACE arm-list RBRACE
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    RPAREN   shift, and go to state 192
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+
+State 135
+
+   39 name-binding: REF MUT ID .
+
+    $default  reduce using rule 39 (name-binding)
+
+
+State 136
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   63    | WHILE LPAREN exp . RPAREN block
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    RPAREN   shift, and go to state 193
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+
+State 137
+
+   87 pats: pat COMMA . pats
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 26
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    pat            go to state 72
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 47
+    lookup         go to state 48
+    function       go to state 49
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pats           go to state 194
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 138
+
+   83 pat-array: LBRACK pats RBRACK .
+
+    $default  reduce using rule 83 (pat-array)
+
+
+State 139
+
+   60 exp: AMP MUT . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 146
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 140
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   58    | AMP exp .
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 58 (exp)]
+    DASH      [reduce using rule 58 (exp)]
+    ASTER     [reduce using rule 58 (exp)]
+    PLUS      [reduce using rule 58 (exp)]
+    SLASH     [reduce using rule 58 (exp)]
+    PERCENT   [reduce using rule 58 (exp)]
+    DBLBAR    [reduce using rule 58 (exp)]
+    DBLAMP    [reduce using rule 58 (exp)]
+    DBLEQ     [reduce using rule 58 (exp)]
+    NOTEQ     [reduce using rule 58 (exp)]
+    LTHAN     [reduce using rule 58 (exp)]
+    GTHAN     [reduce using rule 58 (exp)]
+    LEQTHAN   [reduce using rule 58 (exp)]
+    GEQTHAN   [reduce using rule 58 (exp)]
+    PERIOD    [reduce using rule 58 (exp)]
+    $default  reduce using rule 58 (exp)
+
+
+State 141
+
+   42 exp: LPAREN exp RPAREN .
+
+    $default  reduce using rule 42 (exp)
+
+
+State 142
+
+   16 return: EXCLAM .
+
+    $default  reduce using rule 16 (return)
+
+
+State 143
+
+    9 fn-def: FN ID LPAREN RPAREN SNGLARROW return . block
+
+    LBRACE  shift, and go to state 65
+
+    block  go to state 195
+
+
+State 144
+
+   15 return: type .
+
+    $default  reduce using rule 15 (return)
+
+
+State 145
+
+   37 name-binding: MUT ID .
+   41 exp: ID .
+   75 function: ID . LPAREN exps RPAREN
+   76         | ID . unit
+   85 pat-enum: ID . DBLCOL ID LPAREN pats RPAREN
+   86         | ID . DBLCOL ID
+   89 pat-struct: ID . LBRACE id-pat-list RBRACE
+
+    DBLCOL  shift, and go to state 89
+    LPAREN  shift, and go to state 90
+    LBRACE  shift, and go to state 91
+
+    DBLARROW  reduce using rule 37 (name-binding)
+    DBLARROW  [reduce using rule 41 (exp)]
+    RBRACK    reduce using rule 37 (name-binding)
+    RBRACK    [reduce using rule 41 (exp)]
+    RPAREN    reduce using rule 37 (name-binding)
+    RPAREN    [reduce using rule 41 (exp)]
+    RBRACE    reduce using rule 37 (name-binding)
+    RBRACE    [reduce using rule 41 (exp)]
+    COMMA     reduce using rule 37 (name-binding)
+    COMMA     [reduce using rule 41 (exp)]
+    SEMI      reduce using rule 37 (name-binding)
+    SEMI      [reduce using rule 41 (exp)]
+    BAR       reduce using rule 37 (name-binding)
+    BAR       [reduce using rule 41 (exp)]
+    EQUAL     reduce using rule 37 (name-binding)
+    EQUAL     [reduce using rule 41 (exp)]
+    COLON     reduce using rule 37 (name-binding)
+    COLON     [reduce using rule 41 (exp)]
+    $default  reduce using rule 41 (exp)
+
+    unit  go to state 92
+
+
+State 146
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   60    | AMP MUT exp .
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 60 (exp)]
+    PERIOD    [reduce using rule 60 (exp)]
+    $default  reduce using rule 60 (exp)
+
+
+State 147
+
+   85 pat-enum: ID DBLCOL ID . LPAREN pats RPAREN
+   86         | ID DBLCOL ID .
+
+    LPAREN  shift, and go to state 196
+
+    $default  reduce using rule 86 (pat-enum)
+
+
+State 148
+
+  112 unit: LPAREN RPAREN .
+
+    $default  reduce using rule 112 (unit)
+
+
+State 149
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   71 exps: exp . COMMA exps
+   72     | exp .
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    COMMA    shift, and go to state 197
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    $default  reduce using rule 72 (exps)
+
+
+State 150
+
+   75 function: ID LPAREN exps . RPAREN
+
+    RPAREN  shift, and go to state 198
+
+
+State 151
+
+   92 id-pat: ID . COLON pat
+
+    COLON  shift, and go to state 199
+
+
+State 152
+
+   89 pat-struct: ID LBRACE id-pat-list . RBRACE
+
+    RBRACE  shift, and go to state 200
+
+
+State 153
+
+   90 id-pat-list: id-pat . COMMA id-pat-list
+   91            | id-pat .
+
+    COMMA  shift, and go to state 201
+
+    $default  reduce using rule 91 (id-pat-list)
+
+
+State 154
+
+   11 fn-def: FN ID LPAREN fn-params RPAREN SNGLARROW . return block
+
+    BOX     shift, and go to state 115
+    LBRACK  shift, and go to state 116
+    EXCLAM  shift, and go to state 142
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    return  go to state 202
+    type    go to state 144
+
+
+State 155
+
+   10 fn-def: FN ID LPAREN fn-params RPAREN block .
+
+    $default  reduce using rule 10 (fn-def)
+
+
+State 156
+
+   12 fn-params: fn-param COMMA fn-params .
+
+    $default  reduce using rule 12 (fn-params)
+
+
+State 157
+
+   24 pat-type: pat COLON type .
+
+    $default  reduce using rule 24 (pat-type)
+
+
+State 158
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   62    | exp LBRACK exp . RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    RBRACK   shift, and go to state 203
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+
+State 159
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   44    | exp DASH exp .
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    ASTER    shift, and go to state 98
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 44 (exp)]
+    PERIOD    [reduce using rule 44 (exp)]
+    $default  reduce using rule 44 (exp)
+
+
+State 160
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   45    | exp ASTER exp .
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 45 (exp)]
+    PERIOD    [reduce using rule 45 (exp)]
+    $default  reduce using rule 45 (exp)
+
+
+State 161
+
+   43 exp: exp . PLUS exp
+   43    | exp PLUS exp .
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    ASTER    shift, and go to state 98
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 43 (exp)]
+    PERIOD    [reduce using rule 43 (exp)]
+    $default  reduce using rule 43 (exp)
+
+
+State 162
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   46    | exp SLASH exp .
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 46 (exp)]
+    PERIOD    [reduce using rule 46 (exp)]
+    $default  reduce using rule 46 (exp)
+
+
+State 163
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   47    | exp PERCENT exp .
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 47 (exp)]
+    PERIOD    [reduce using rule 47 (exp)]
+    $default  reduce using rule 47 (exp)
+
+
+State 164
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   50    | exp DBLBAR exp .
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 50 (exp)]
+    PERIOD    [reduce using rule 50 (exp)]
+    $default  reduce using rule 50 (exp)
+
+
+State 165
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   49    | exp DBLAMP exp .
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    LBRACK    [reduce using rule 49 (exp)]
+    PERIOD    [reduce using rule 49 (exp)]
+    $default  reduce using rule 49 (exp)
+
+
+State 166
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   56    | exp DBLEQ exp .
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK  shift, and go to state 96
+    PERIOD  shift, and go to state 110
+
+    LBRACK    [reduce using rule 56 (exp)]
+    PERIOD    [reduce using rule 56 (exp)]
+    $default  reduce using rule 56 (exp)
+
+
+State 167
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   57    | exp NOTEQ exp .
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK  shift, and go to state 96
+    PERIOD  shift, and go to state 110
+
+    LBRACK    [reduce using rule 57 (exp)]
+    PERIOD    [reduce using rule 57 (exp)]
+    $default  reduce using rule 57 (exp)
+
+
+State 168
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   52    | exp LTHAN exp .
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK  shift, and go to state 96
+    PERIOD  shift, and go to state 110
+
+    LBRACK    [reduce using rule 52 (exp)]
+    PERIOD    [reduce using rule 52 (exp)]
+    $default  reduce using rule 52 (exp)
+
+
+State 169
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   53    | exp GTHAN exp .
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK  shift, and go to state 96
+    PERIOD  shift, and go to state 110
+
+    LBRACK    [reduce using rule 53 (exp)]
+    PERIOD    [reduce using rule 53 (exp)]
+    $default  reduce using rule 53 (exp)
+
+
+State 170
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   54    | exp LEQTHAN exp .
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK  shift, and go to state 96
+    PERIOD  shift, and go to state 110
+
+    LBRACK    [reduce using rule 54 (exp)]
+    PERIOD    [reduce using rule 54 (exp)]
+    $default  reduce using rule 54 (exp)
+
+
+State 171
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   55    | exp GEQTHAN exp .
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+
+    LBRACK  shift, and go to state 96
+    PERIOD  shift, and go to state 110
+
+    LBRACK    [reduce using rule 55 (exp)]
+    PERIOD    [reduce using rule 55 (exp)]
+    $default  reduce using rule 55 (exp)
+
+
+State 172
+
+   74 lookup: exp PERIOD ID .
+
+    $default  reduce using rule 74 (lookup)
+
+
+State 173
+
+   73 lookup: lookup PERIOD ID .
+
+    $default  reduce using rule 73 (lookup)
+
+
+State 174
+
+  111 type-annotation: ID COLON type .
+
+    $default  reduce using rule 111 (type-annotation)
+
+
+State 175
+
+  109 type-annotations: type-annotation COMMA type-annotations .
+
+    $default  reduce using rule 109 (type-annotations)
+
+
+State 176
+
+  100 type: BOX LTHAN . type GTHAN
+
+    BOX     shift, and go to state 115
+    LBRACK  shift, and go to state 116
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    type  go to state 204
+
+
+State 177
+
+   98 type: LBRACK type . RBRACK
+   99     | LBRACK type . SEMI LITDEC RBRACK
+
+    RBRACK  shift, and go to state 205
+    SEMI    shift, and go to state 206
+
+
+State 178
+
+   96 type: AMP MUT . type
+
+    BOX     shift, and go to state 115
+    LBRACK  shift, and go to state 116
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    type  go to state 207
+
+
+State 179
+
+   95 type: AMP type .
+
+    $default  reduce using rule 95 (type)
+
+
+State 180
+
+   20 enum-ctor-def: ID LPAREN enum-ctor-params RPAREN .
+
+    $default  reduce using rule 20 (enum-ctor-def)
+
+
+State 181
+
+   22 enum-ctor-params: type COMMA . enum-ctor-params
+  101 type-list: type COMMA . type-list
+
+    BOX     shift, and go to state 115
+    LBRACK  shift, and go to state 116
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    enum-ctor-params  go to state 208
+    type              go to state 122
+    type-list         go to state 209
+
+
+State 182
+
+  106 enum-ctor-def: ID LPAREN type-list RPAREN .
+
+    $default  reduce using rule 106 (enum-ctor-def)
+
+
+State 183
+
+   69 exp: BOX DBLCOL NEW LPAREN . exp RPAREN
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 210
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 184
+
+   65 exp: IF LPAREN exp RPAREN . block ELSE block
+   66    | IF LPAREN exp RPAREN . block
+
+    LBRACE  shift, and go to state 65
+
+    block  go to state 211
+
+
+State 185
+
+  122 let-stmt: LET pat .
+  123         | LET pat . COLON type EQUAL exp
+  124         | LET pat . EQUAL exp
+  125         | LET pat . COLON type
+
+    EQUAL  shift, and go to state 212
+    COLON  shift, and go to state 213
+
+    $default  reduce using rule 122 (let-stmt)
+
+
+State 186
+
+  119 stmt: RETURN SEMI .
+
+    $default  reduce using rule 119 (stmt)
+
+
+State 187
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+  118 stmt: RETURN exp . SEMI
+
+    LBRACK   shift, and go to state 96
+    SEMI     shift, and go to state 214
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+
+State 188
+
+  117 stmt: exp SEMI .
+
+    $default  reduce using rule 117 (stmt)
+
+
+State 189
+
+  113 block: LBRACE stmts RBRACE .
+
+    $default  reduce using rule 113 (block)
+
+
+State 190
+
+  114 stmts: stmt stmts .
+
+    $default  reduce using rule 114 (stmts)
+
+
+State 191
+
+  120 stmt: let-stmt SEMI .
+
+    $default  reduce using rule 120 (stmt)
+
+
+State 192
+
+   67 exp: MATCH LPAREN exp RPAREN . LBRACE arm-list RBRACE
+
+    LBRACE  shift, and go to state 215
+
+
+State 193
+
+   63 exp: WHILE LPAREN exp RPAREN . block
+
+    LBRACE  shift, and go to state 65
+
+    block  go to state 216
+
+
+State 194
+
+   87 pats: pat COMMA pats .
+
+    $default  reduce using rule 87 (pats)
+
+
+State 195
+
+    9 fn-def: FN ID LPAREN RPAREN SNGLARROW return block .
+
+    $default  reduce using rule 9 (fn-def)
+
+
+State 196
+
+   85 pat-enum: ID DBLCOL ID LPAREN . pats RPAREN
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 26
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    pat            go to state 72
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 47
+    lookup         go to state 48
+    function       go to state 49
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pats           go to state 217
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 197
+
+   71 exps: exp COMMA . exps
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 149
+    exps           go to state 218
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 198
+
+   75 function: ID LPAREN exps RPAREN .
+
+    $default  reduce using rule 75 (function)
+
+
+State 199
+
+   92 id-pat: ID COLON . pat
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 26
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    pat            go to state 219
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 47
+    lookup         go to state 48
+    function       go to state 49
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 200
+
+   89 pat-struct: ID LBRACE id-pat-list RBRACE .
+
+    $default  reduce using rule 89 (pat-struct)
+
+
+State 201
+
+   90 id-pat-list: id-pat COMMA . id-pat-list
+
+    ID  shift, and go to state 151
+
+    id-pat-list  go to state 220
+    id-pat       go to state 153
+
+
+State 202
+
+   11 fn-def: FN ID LPAREN fn-params RPAREN SNGLARROW return . block
+
+    LBRACE  shift, and go to state 65
+
+    block  go to state 221
+
+
+State 203
+
+   62 exp: exp LBRACK exp RBRACK .
+
+    $default  reduce using rule 62 (exp)
+
+
+State 204
+
+  100 type: BOX LTHAN type . GTHAN
+
+    GTHAN  shift, and go to state 222
+
+
+State 205
+
+   98 type: LBRACK type RBRACK .
+
+    $default  reduce using rule 98 (type)
+
+
+State 206
+
+   99 type: LBRACK type SEMI . LITDEC RBRACK
+
+    LITDEC  shift, and go to state 223
+
+
+State 207
+
+   96 type: AMP MUT type .
+
+    $default  reduce using rule 96 (type)
+
+
+State 208
+
+   22 enum-ctor-params: type COMMA enum-ctor-params .
+
+    $default  reduce using rule 22 (enum-ctor-params)
+
+
+State 209
+
+  101 type-list: type COMMA type-list .
+
+    $default  reduce using rule 101 (type-list)
+
+
+State 210
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   69    | BOX DBLCOL NEW LPAREN exp . RPAREN
+   74 lookup: exp . PERIOD ID
+
+    LBRACK   shift, and go to state 96
+    RPAREN   shift, and go to state 224
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+
+State 211
+
+   65 exp: IF LPAREN exp RPAREN block . ELSE block
+   66    | IF LPAREN exp RPAREN block .
+
+    ELSE  shift, and go to state 225
+
+    $default  reduce using rule 66 (exp)
+
+
+State 212
+
+  124 let-stmt: LET pat EQUAL . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 226
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 213
+
+  123 let-stmt: LET pat COLON . type EQUAL exp
+  125         | LET pat COLON . type
+
+    BOX     shift, and go to state 115
+    LBRACK  shift, and go to state 116
+    AMP     shift, and go to state 117
+    U8      shift, and go to state 118
+    I32     shift, and go to state 119
+    ID      shift, and go to state 120
+
+    type  go to state 227
+
+
+State 214
+
+  118 stmt: RETURN exp SEMI .
+
+    $default  reduce using rule 118 (stmt)
+
+
+State 215
+
+   67 exp: MATCH LPAREN exp RPAREN LBRACE . arm-list RBRACE
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 26
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    pat            go to state 228
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 47
+    lookup         go to state 48
+    function       go to state 49
+    arm-list       go to state 229
+    arm-list-item  go to state 230
+    pat-list       go to state 231
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 216
+
+   63 exp: WHILE LPAREN exp RPAREN block .
+
+    $default  reduce using rule 63 (exp)
+
+
+State 217
+
+   85 pat-enum: ID DBLCOL ID LPAREN pats . RPAREN
+
+    RPAREN  shift, and go to state 232
+
+
+State 218
+
+   71 exps: exp COMMA exps .
+
+    $default  reduce using rule 71 (exps)
+
+
+State 219
+
+   92 id-pat: ID COLON pat .
+
+    $default  reduce using rule 92 (id-pat)
+
+
+State 220
+
+   90 id-pat-list: id-pat COMMA id-pat-list .
+
+    $default  reduce using rule 90 (id-pat-list)
+
+
+State 221
+
+   11 fn-def: FN ID LPAREN fn-params RPAREN SNGLARROW return block .
+
+    $default  reduce using rule 11 (fn-def)
+
+
+State 222
+
+  100 type: BOX LTHAN type GTHAN .
+
+    $default  reduce using rule 100 (type)
+
+
+State 223
+
+   99 type: LBRACK type SEMI LITDEC . RBRACK
+
+    RBRACK  shift, and go to state 233
+
+
+State 224
+
+   69 exp: BOX DBLCOL NEW LPAREN exp RPAREN .
+
+    $default  reduce using rule 69 (exp)
+
+
+State 225
+
+   65 exp: IF LPAREN exp RPAREN block ELSE . block
+
+    LBRACE  shift, and go to state 65
+
+    block  go to state 234
+
+
+State 226
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+  124 let-stmt: LET pat EQUAL exp .
+
+    LBRACK   shift, and go to state 96
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    $default  reduce using rule 124 (let-stmt)
+
+
+State 227
+
+  123 let-stmt: LET pat COLON type . EQUAL exp
+  125         | LET pat COLON type .
+
+    EQUAL  shift, and go to state 235
+
+    $default  reduce using rule 125 (let-stmt)
+
+
+State 228
+
+   80 pat-list: pat . BAR pat-list
+   81         | pat .
+
+    BAR  shift, and go to state 236
+
+    $default  reduce using rule 81 (pat-list)
+
+
+State 229
+
+   67 exp: MATCH LPAREN exp RPAREN LBRACE arm-list . RBRACE
+
+    RBRACE  shift, and go to state 237
+
+
+State 230
+
+   77 arm-list: arm-list-item . COMMA arm-list
+   78         | arm-list-item .
+
+    COMMA  shift, and go to state 238
+
+    $default  reduce using rule 78 (arm-list)
+
+
+State 231
+
+   79 arm-list-item: pat-list . DBLARROW block
+
+    DBLARROW  shift, and go to state 239
+
+
+State 232
+
+   85 pat-enum: ID DBLCOL ID LPAREN pats RPAREN .
+
+    $default  reduce using rule 85 (pat-enum)
+
+
+State 233
+
+   99 type: LBRACK type SEMI LITDEC RBRACK .
+
+    $default  reduce using rule 99 (type)
+
+
+State 234
+
+   65 exp: IF LPAREN exp RPAREN block ELSE block .
+
+    $default  reduce using rule 65 (exp)
+
+
+State 235
+
+  123 let-stmt: LET pat COLON type EQUAL . exp
+
+    BOX      shift, and go to state 22
+    IF       shift, and go to state 23
+    LOOP     shift, and go to state 24
+    MATCH    shift, and go to state 25
+    WHILE    shift, and go to state 28
+    LBRACK   shift, and go to state 29
+    LPAREN   shift, and go to state 30
+    DASH     shift, and go to state 32
+    ASTER    shift, and go to state 33
+    EXCLAM   shift, and go to state 34
+    AMP      shift, and go to state 74
+    LITDEC   shift, and go to state 37
+    LITCHAR  shift, and go to state 38
+    LITSTR   shift, and go to state 39
+    ID       shift, and go to state 75
+
+    primitive-lit  go to state 76
+    exp            go to state 240
+    lookup         go to state 48
+    function       go to state 49
+    pat-array      go to state 78
+    loop           go to state 52
+    pat-enum       go to state 79
+    pat-struct     go to state 80
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 236
+
+   80 pat-list: pat BAR . pat-list
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 26
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    pat            go to state 228
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 47
+    lookup         go to state 48
+    function       go to state 49
+    pat-list       go to state 241
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 237
+
+   67 exp: MATCH LPAREN exp RPAREN LBRACE arm-list RBRACE .
+
+    $default  reduce using rule 67 (exp)
+
+
+State 238
+
+   77 arm-list: arm-list-item COMMA . arm-list
+
+    BOX         shift, and go to state 22
+    IF          shift, and go to state 23
+    LOOP        shift, and go to state 24
+    MATCH       shift, and go to state 25
+    MUT         shift, and go to state 26
+    REF         shift, and go to state 27
+    WHILE       shift, and go to state 28
+    LBRACK      shift, and go to state 29
+    LPAREN      shift, and go to state 30
+    DASH        shift, and go to state 32
+    ASTER       shift, and go to state 33
+    EXCLAM      shift, and go to state 34
+    AMP         shift, and go to state 35
+    UNDERSCORE  shift, and go to state 36
+    LITDEC      shift, and go to state 37
+    LITCHAR     shift, and go to state 38
+    LITSTR      shift, and go to state 39
+    ID          shift, and go to state 40
+
+    pat            go to state 228
+    primitive-lit  go to state 45
+    name-binding   go to state 46
+    exp            go to state 47
+    lookup         go to state 48
+    function       go to state 49
+    arm-list       go to state 242
+    arm-list-item  go to state 230
+    pat-list       go to state 231
+    pat-deref      go to state 50
+    pat-array      go to state 51
+    loop           go to state 52
+    pat-enum       go to state 53
+    pat-struct     go to state 54
+    literal        go to state 55
+    compound-lit   go to state 56
+
+
+State 239
+
+   79 arm-list-item: pat-list DBLARROW . block
+
+    LBRACE  shift, and go to state 65
+
+    block  go to state 243
+
+
+State 240
+
+   43 exp: exp . PLUS exp
+   44    | exp . DASH exp
+   45    | exp . ASTER exp
+   46    | exp . SLASH exp
+   47    | exp . PERCENT exp
+   49    | exp . DBLAMP exp
+   50    | exp . DBLBAR exp
+   52    | exp . LTHAN exp
+   53    | exp . GTHAN exp
+   54    | exp . LEQTHAN exp
+   55    | exp . GEQTHAN exp
+   56    | exp . DBLEQ exp
+   57    | exp . NOTEQ exp
+   62    | exp . LBRACK exp RBRACK
+   74 lookup: exp . PERIOD ID
+  123 let-stmt: LET pat COLON type EQUAL exp .
+
+    LBRACK   shift, and go to state 96
+    DASH     shift, and go to state 97
+    ASTER    shift, and go to state 98
+    PLUS     shift, and go to state 99
+    SLASH    shift, and go to state 100
+    PERCENT  shift, and go to state 101
+    DBLBAR   shift, and go to state 102
+    DBLAMP   shift, and go to state 103
+    DBLEQ    shift, and go to state 104
+    NOTEQ    shift, and go to state 105
+    LTHAN    shift, and go to state 106
+    GTHAN    shift, and go to state 107
+    LEQTHAN  shift, and go to state 108
+    GEQTHAN  shift, and go to state 109
+    PERIOD   shift, and go to state 110
+
+    $default  reduce using rule 123 (let-stmt)
+
+
+State 241
+
+   80 pat-list: pat BAR pat-list .
+
+    $default  reduce using rule 80 (pat-list)
+
+
+State 242
+
+   77 arm-list: arm-list-item COMMA arm-list .
+
+    $default  reduce using rule 77 (arm-list)
+
+
+State 243
+
+   79 arm-list-item: pat-list DBLARROW block .
+
+    $default  reduce using rule 79 (arm-list-item)
